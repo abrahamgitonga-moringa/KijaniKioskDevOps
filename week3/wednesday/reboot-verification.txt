@@ -1,0 +1,32 @@
+=== SYSTEMCTL STATUS VERIFICATION ===
+● kk-api.service - KijaniKiosk Core API Engine Service
+     Loaded: loaded (/etc/systemd/system/kk-api.service; enabled; preset: enabled)
+     Active: active (running) since Mon 2026-06-22 15:32:09 EAT; 186ms ago
+ Invocation: 96f3a431baf24b4f8cde312d5ad3153b
+   Main PID: 9609 (node)
+      Tasks: 6 (limit: 17843)
+     Memory: 5.1M (peak: 5.8M)
+        CPU: 87ms
+     CGroup: /system.slice/kk-api.service
+             └─9609 /usr/bin/node server.js
+
+Jun 22 15:32:09 abraham-ThinkPad-X12-Detachable-Gen-2 systemd[1]: kk-api.service: Scheduled restart job, restart counter is at 84.
+Jun 22 15:32:09 abraham-ThinkPad-X12-Detachable-Gen-2 systemd[1]: Started kk-api.service - KijaniKiosk Core API Engine Service.
+
+=== APT-MARK VERSION LOCKS ===
+nginx
+nodejs
+
+=== UFW FIREWALL CONFIGURATION ===
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), deny (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    Anywhere                   # Permit administrative SSH access
+80/tcp                     ALLOW IN    Anywhere                   # Permit application HTTP access
+22/tcp (v6)                ALLOW IN    Anywhere (v6)              # Permit administrative SSH access
+80/tcp (v6)                ALLOW IN    Anywhere (v6)              # Permit application HTTP access
+
