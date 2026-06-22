@@ -1,0 +1,14 @@
+# File: /etc/sudoers.d/amina
+# Purpose: Least-privilege operations assignment for Amina
+
+Cmnd_Alias KK_SERVICES = /usr/bin/systemctl start kk-api, /usr/bin/systemctl stop kk-api, /usr/bin/systemctl restart kk-api, /usr/bin/systemctl status kk-api, /usr/bin/systemctl start kk-payments, /usr/bin/systemctl stop kk-payments, /usr/bin/systemctl restart kk-payments, /usr/bin/systemctl status kk-payments, /usr/bin/systemctl start kk-logs, /usr/bin/systemctl stop kk-logs, /usr/bin/systemctl restart kk-logs, /usr/bin/systemctl status kk-logs
+Cmnd_Alias KK_LOGS = /usr/bin/journalctl -u kk-api, /usr/bin/journalctl -u kk-payments, /usr/bin/journalctl -u kk-logs
+
+# Rules Management
+abraham ALL=(root) KK_SERVICES
+abraham ALL=(root) KK_LOGS
+abraham ALL=(root) sudoedit /etc/nginx/nginx.conf
+
+# Architectural Protections:
+# - Command paths are explicitly declared to prevent execution hijacking via modified PATH environment variables.
+# - Sudoedit is enforced rather than 'sudo vim', blocking users from opening a root shell using standard editor escape sequences (:!bash).
