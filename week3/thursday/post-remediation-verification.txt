@@ -1,0 +1,27 @@
+=== COMPLIANCE REPORT: POST-REMEDIATION STATE ===
+Timestamp: Wed Jun 24 03:04:35 PM EAT 2026
+--------------------------------------------------------
+1. PERFORMANCE VERIFICATION (Look for wa near 0%):
+procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu
+ 0  0      0 7122092  55896 3004256    0    0  6201   694 9573    6 13  3 84  0  0  0
+ 0  0      0 7123312  55896 3001768    0    0     0   136 1238 2231  2  0 97  0  0  0
+ 0  0      0 7113948  55908 3001728    0    0     0   140 1615 2182  4  1 96  0  0  0
+
+2. DRIVE DISK CAPACITY ASSIGNMENT (Safe operating space):
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p6   70G   21G   46G  32% /
+
+3. BOUND PORT EXECUTION MAP (Confirming no rogue server remains):
+Port 3001 clear of conflicts
+
+4. ACTIVE NETWORK SECURITY RULESETS:
+Status: active
+
+     To                         Action      From
+     --                         ------      ----
+[ 1] 22/tcp                     ALLOW IN    Anywhere                   # Permit administrative SSH access
+[ 2] 80/tcp                     ALLOW IN    Anywhere                   # Permit application HTTP access
+[ 3] 22/tcp (v6)                ALLOW IN    Anywhere (v6)              # Permit administrative SSH access
+[ 4] 80/tcp (v6)                ALLOW IN    Anywhere (v6)              # Permit application HTTP access
+
