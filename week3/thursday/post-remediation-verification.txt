@@ -25,3 +25,4 @@ Status: active
 [ 3] 22/tcp (v6)                ALLOW IN    Anywhere (v6)              # Permit administrative SSH access
 [ 4] 80/tcp (v6)                ALLOW IN    Anywhere (v6)              # Permit application HTTP access
 
+PASS: kk-api can write after logrotate

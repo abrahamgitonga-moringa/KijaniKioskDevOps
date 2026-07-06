@@ -1,0 +1,129 @@
+
+[2026-06-24 16:43:44] ==========================================
+[2026-06-24 16:43:44] PHASE 1: System Environment & Package Pinning
+[2026-06-24 16:43:44] ==========================================
+[2026-06-24 16:43:44] [INFO] Verifying package states and establishing immutable locks...
+[2026-06-24 16:43:44] [WARN] Nginx is missing or version mismatch (Found: 1.28.3). Syncing to production standard...
+nginx was already set on hold.
+curl was already set on hold.
+
+[2026-06-24 16:43:44] ==========================================
+[2026-06-24 16:43:45] PHASE 2: System Service Account Architecture
+[2026-06-24 16:43:45] ==========================================
+[2026-06-24 16:43:45] [INFO] Shared execution group [kijanikiosk] already exists. Skipping creation.
+[2026-06-24 16:43:45] [INFO] Service account [kk-api] already exists in system database. Skipping database injection.
+[2026-06-24 16:43:45] [INFO] Service account [kk-payments] already exists in system database. Skipping database injection.
+[2026-06-24 16:43:45] [INFO] Service account [kk-logs] already exists in system database. Skipping database injection.
+
+[2026-06-24 16:43:45] ==========================================
+[2026-06-24 16:43:45] PHASE 3: Compliance File System & Access Control Lists
+[2026-06-24 16:43:45] ==========================================
+[2026-06-24 16:43:45] [INFO] Normalizing core folder ownership attributes...
+[2026-06-24 16:43:45] [INFO] Injecting explicit POSIX Access Control Lists (ACLs) and inheritance masks...
+
+[2026-06-24 16:43:45] ==========================================
+[2026-06-24 16:43:45] PHASE 4: Environment Configuration and Secret Isolation
+[2026-06-24 16:43:45] ==========================================
+[2026-06-24 16:43:45] [INFO] Injecting secure configuration payloads into EnvironmentFile scopes...
+[2026-06-24 16:43:45] [INFO] Secrets isolated. Read verified for service context.
+
+[2026-06-24 16:43:45] ==========================================
+[2026-06-24 16:43:45] PHASE 5: Immutable Firewall Architecture
+[2026-06-24 16:43:45] ==========================================
+[2026-06-24 16:43:45] [INFO] Resetting UFW to clear all historical manual rulesets...
+Backing up 'user.rules' to '/etc/ufw/user.rules.20260624_164346'
+Backing up 'before.rules' to '/etc/ufw/before.rules.20260624_164346'
+Backing up 'after.rules' to '/etc/ufw/after.rules.20260624_164346'
+Backing up 'user6.rules' to '/etc/ufw/user6.rules.20260624_164346'
+Backing up 'before6.rules' to '/etc/ufw/before6.rules.20260624_164346'
+Backing up 'after6.rules' to '/etc/ufw/after6.rules.20260624_164346'
+
+[2026-06-24 16:43:46] [INFO] Establishing secure production default rulesets...
+Default incoming policy changed to 'deny'
+(be sure to update your rules accordingly)
+Default outgoing policy changed to 'allow'
+(be sure to update your rules accordingly)
+[2026-06-24 16:43:46] [INFO] Applying explicit, comment-annotated access controls...
+Rules updated
+Rules updated
+Rules updated
+Rules updated (v6)
+Rules updated
+Rules updated (v6)
+Firewall is active and enabled on system startup
+[2026-06-24 16:43:47] [INFO] Firewall securely activated and locked.
+
+[2026-06-24 16:43:47] ==========================================
+[2026-06-24 16:43:47] PHASE 6: Hardened Systemd Service Initialization
+[2026-06-24 16:43:48] ==========================================
+[2026-06-24 16:43:48] [INFO] Writing high-security application profiles directly into unit paths...
+[2026-06-24 16:43:48] [INFO] Reloading master systemd execution engine and activating services...
+
+[2026-06-24 16:43:49] ==========================================
+[2026-06-24 16:43:49] PHASE 7: Journal Persistence and Log Rotation
+[2026-06-24 16:43:49] ==========================================
+[2026-06-24 16:43:49] [INFO] Enforcing persistent journal storage parameters...
+[2026-06-24 16:43:49] [INFO] Injecting rotation parameters to resolve the ACL creation conflict...
+[2026-06-24 16:43:49] [INFO] Executing programmatic syntax check on logrotate infrastructure...
+warning: logrotate in debug mode does nothing except printing debug messages!  Consider using verbose mode (-v) instead if this is not what you want.
+
+reading config file /etc/logrotate.d/kijanikiosk
+Reading state from file: /var/lib/logrotate/status
+Allocating hash table for state file, size 64 entries
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+
+Handling 1 logs
+
+rotating pattern: /opt/kijanikiosk/shared/logs/*.log after 1 days empty log files are not rotated, (7 rotations), old logs are removed
+switching euid from 0 to 997 and egid from 0 to 1001 (pid 26166)
+considering log /opt/kijanikiosk/shared/logs/*.log
+  log /opt/kijanikiosk/shared/logs/*.log does not exist -- skipping
+Creating new state
+not running postrotate script, since no logs were rotated
+switching euid from 997 to 0 and egid from 1001 to 0 (pid 26166)
+[2026-06-24 16:43:49] [INFO] Logrotate validation passes without errors.
+
+[2026-06-24 16:43:49] ==========================================
+[2026-06-24 16:43:49] PHASE 8: Monitoring Health Checks & System Convergence Verification
+[2026-06-24 16:43:49] ==========================================
+[2026-06-24 16:43:49] [INFO] Running live socket tests to evaluate system readiness...
+
+=== FINAL PROVISIONING SYSTEM ASSURANCE RECONCILIATION ===
+PASS: Service account kk-payments verified.
+getfacl: Removing leading '/' from absolute path names
+PASS: Security ACL masks verified on shared log segments.
+PASS: External access restriction on port 3001 verified.
+PASS: Hardening threshold cleared (0.1/10).
+SYSTEM SUMMARY: ALL CONVERGENCE MARKS VERIFIED [SUCCESS]
+
