@@ -1,0 +1,10 @@
+---
+service_group: "kijanikiosk"
+base_dir: "/opt/kijanikiosk"
+log_dir: "/var/log/kijanikiosk"
+required_packages:
+  - git
+  - curl
+  - nginx
+  - ufw
+  - logrotate
