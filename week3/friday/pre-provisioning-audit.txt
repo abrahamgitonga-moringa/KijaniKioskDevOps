@@ -1,0 +1,63 @@
+# === PRE-PROVISIONING AUDIT LOG: DIRTY STATE IDENTIFICATION ===
+# Generated Timestamp: Fri Jun 26 08:42:11 EAT 2026
+# Target Machine: abraham@abraham-ThinkPad-X12-Detachable-Gen-2
+
+# getent passwd kk-api kk-payments kk-logs
+kk-api:x:998:996:KijaniKiosk API Service Account:/opt/kijanikiosk:/usr/sbin/nologin
+kk-payments:x:997:996:KijaniKiosk Payments Service Account:/opt/kijanikiosk:/usr/sbin/nologin
+# INTERPRETATION: Service accounts already exist from Tuesday's manual lab. 
+# UID allocation is locked. Script must catch this in Phase 2 via 'id' mapping.
+
+# getent group kijanikiosk
+kijanikiosk:x:996:kk-api,kk-payments,kk-logs,abraham
+# INTERPRETATION: Shared execution group exists. GID is set. Script must skip creation.
+
+# ls -la /opt/kijanikiosk/
+total 24
+drwxr-xr-x  6 root        root        4096 Jun 23 11:14 .
+drwxr-xr-x  3 root        root        4096 Jun 23 11:14 ..
+drwxr-x---  2 kk-api      kijanikiosk 4096 Jun 23 14:22 config
+drwxrwxr-x  2 kk-api      kijanikiosk 4096 Jun 25 16:02 shared
+# INTERPRETATION: Basic directories exist, but permissions are non-compliant with production requirements. 
+# Configuration directory lacks standard access for secondary parsing workers.
+
+# getfacl /opt/kijanikiosk/shared/logs/
+# file: opt/kijanikiosk/shared/logs/
+# owner: kk-api
+# group: kijanikiosk
+user::rwx
+group::r-x
+mask::r-x
+other::---
+default:user::rwx
+default:group::r-x
+default:mask::r-x
+default:other::---
+# INTERPRETATION: Standard POSIX ACLs exist, but default inheritance masks are missing 
+# explicit entries for the payment audit engines, which will break log rotation pipelines.
+
+# sudo ufw status numbered
+Status: active
+     To                         Action      From
+     --                         ------      ----
+[ 1] 22/tcp                     ALLOW IN    Anywhere                  # Permit administrative SSH access
+[ 2] 80/tcp                     ALLOW IN    Anywhere                  # Permit application HTTP access
+[ 3] 3001/tcp                   DENY IN     Anywhere                  # Thursday emergency remediation block
+# INTERPRETATION: Firewall is in a dirty historical state. The Thursday manual block rule on port 3001 
+# will cause connection drops for local loopback proxy setups unless reset in Phase 5.
+
+# apt-mark showhold
+curl
+nginx
+# INTERPRETATION: Strict package pins are active on curl and nginx, but missing pins on other 
+# core runtime tools. The script must normalize holds cleanly across all components.
+
+# systemctl list-unit-files | grep kk-
+kk-api.service                             enabled         enabled
+# INTERPRETATION: A legacy, unhardened service profile is present from Wednesday's lab. 
+# The script must overwrite this configuration and reload the daemon cleanly.
+
+# du -sh /opt/kijanikiosk/shared/logs/
+1.6G	/opt/kijanikiosk/shared/logs/
+# INTERPRETATION: Massive unrotated log assets remain on disk from previous simulations, 
+# threatening a disk capacity alert unless rotated in Phase 7.
