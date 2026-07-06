@@ -1,0 +1,5 @@
+Command 'minio' not found, did you mean:
+  command 'minfo' from deb mtools (4.0.49-1)
+  command 'minia' from deb minia (3.2.6-5)
+  command 'minil' from deb minilla (3.1.29-1)
+Try: sudo apt install <deb name>
