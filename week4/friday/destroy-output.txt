@@ -1,0 +1,134 @@
+[0m[1mmodule.app_servers["payments"].local_file.cloudinit_rendered: Refreshing state... [id=f40efafa802a955ccc12c4f08534d7f7efb959f2][0m
+[0m[1mmodule.app_servers["logs"].local_file.cloudinit_rendered: Refreshing state... [id=f40efafa802a955ccc12c4f08534d7f7efb959f2][0m
+[0m[1mmodule.app_servers["api"].local_file.cloudinit_rendered: Refreshing state... [id=f40efafa802a955ccc12c4f08534d7f7efb959f2][0m
+[0m[1mmodule.app_servers["api"].multipass_instance.this: Refreshing state... [name=kijanikiosk-api][0m
+[0m[1mmodule.app_servers["logs"].multipass_instance.this: Refreshing state... [name=kijanikiosk-logs][0m
+[0m[1mmodule.app_servers["payments"].multipass_instance.this: Refreshing state... [name=kijanikiosk-payments][0m
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  [31m-[0m destroy[0m
+
+Terraform will perform the following actions:
+
+[1m  # module.app_servers["api"].local_file.cloudinit_rendered[0m will be [1m[31mdestroyed[0m
+[0m  [31m-[0m[0m resource "local_file" "cloudinit_rendered" {
+      [31m-[0m[0m content              = <<-EOT
+            #cloud-config
+            users:
+              - name: ubuntu
+                sudo: ALL=(ALL) NOPASSWD:ALL
+                shell: /bin/bash
+                ssh_authorized_keys:
+                  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFDk3ksMv93R/XKmAp/Nl/UrK9cSDN1vs+BwKC7ct1Wk abraham-thinkpad
+        EOT [90m-> null[0m[0m
+      [31m-[0m[0m content_base64sha256 = "WjOzqPhW++9RXAJ9HU1gcBCWpLX7Mwm0CvEVebDG/dg=" [90m-> null[0m[0m
+      [31m-[0m[0m content_base64sha512 = "RO+5XGKkbCU/Sawj3BYZNXIY8EID/tgHY9fwcF3YQL+NmU6HCQpwzbzu8+UNitTeU4hahNvbS+i73GzXQUzlzw==" [90m-> null[0m[0m
+      [31m-[0m[0m content_md5          = "95720379ad805783568227050e17a037" [90m-> null[0m[0m
+      [31m-[0m[0m content_sha1         = "f40efafa802a955ccc12c4f08534d7f7efb959f2" [90m-> null[0m[0m
+      [31m-[0m[0m content_sha256       = "5a33b3a8f856fbef515c027d1d4d60701096a4b5fb3309b40af11579b0c6fdd8" [90m-> null[0m[0m
+      [31m-[0m[0m content_sha512       = "44efb95c62a46c253f49ac23dc1619357218f04203fed80763d7f0705dd840bf8d994e87090a70cdbceef3e50d8ad4de53885a84dbdb4be8bbdc6cd7414ce5cf" [90m-> null[0m[0m
+      [31m-[0m[0m directory_permission = "0777" [90m-> null[0m[0m
+      [31m-[0m[0m file_permission      = "0777" [90m-> null[0m[0m
+      [31m-[0m[0m filename             = "modules/app_server/rendered-cloud-config-kijanikiosk-api.yaml" [90m-> null[0m[0m
+      [31m-[0m[0m id                   = "f40efafa802a955ccc12c4f08534d7f7efb959f2" [90m-> null[0m[0m
+    }
+
+[1m  # module.app_servers["api"].multipass_instance.this[0m will be [1m[31mdestroyed[0m
+[0m  [31m-[0m[0m resource "multipass_instance" "this" {
+      [31m-[0m[0m cloudinit_file = "modules/app_server/rendered-cloud-config-kijanikiosk-api.yaml" [90m-> null[0m[0m
+      [31m-[0m[0m cpus           = 1 [90m-> null[0m[0m
+      [31m-[0m[0m image          = "22.04" [90m-> null[0m[0m
+      [31m-[0m[0m ipv4           = "10.145.218.110" [90m-> null[0m[0m
+      [31m-[0m[0m memory         = "1G" [90m-> null[0m[0m
+      [31m-[0m[0m name           = "kijanikiosk-api" [90m-> null[0m[0m
+    }
+
+[1m  # module.app_servers["logs"].local_file.cloudinit_rendered[0m will be [1m[31mdestroyed[0m
+[0m  [31m-[0m[0m resource "local_file" "cloudinit_rendered" {
+      [31m-[0m[0m content              = <<-EOT
+            #cloud-config
+            users:
+              - name: ubuntu
+                sudo: ALL=(ALL) NOPASSWD:ALL
+                shell: /bin/bash
+                ssh_authorized_keys:
+                  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFDk3ksMv93R/XKmAp/Nl/UrK9cSDN1vs+BwKC7ct1Wk abraham-thinkpad
+        EOT [90m-> null[0m[0m
+      [31m-[0m[0m content_base64sha256 = "WjOzqPhW++9RXAJ9HU1gcBCWpLX7Mwm0CvEVebDG/dg=" [90m-> null[0m[0m
+      [31m-[0m[0m content_base64sha512 = "RO+5XGKkbCU/Sawj3BYZNXIY8EID/tgHY9fwcF3YQL+NmU6HCQpwzbzu8+UNitTeU4hahNvbS+i73GzXQUzlzw==" [90m-> null[0m[0m
+      [31m-[0m[0m content_md5          = "95720379ad805783568227050e17a037" [90m-> null[0m[0m
+      [31m-[0m[0m content_sha1         = "f40efafa802a955ccc12c4f08534d7f7efb959f2" [90m-> null[0m[0m
+      [31m-[0m[0m content_sha256       = "5a33b3a8f856fbef515c027d1d4d60701096a4b5fb3309b40af11579b0c6fdd8" [90m-> null[0m[0m
+      [31m-[0m[0m content_sha512       = "44efb95c62a46c253f49ac23dc1619357218f04203fed80763d7f0705dd840bf8d994e87090a70cdbceef3e50d8ad4de53885a84dbdb4be8bbdc6cd7414ce5cf" [90m-> null[0m[0m
+      [31m-[0m[0m directory_permission = "0777" [90m-> null[0m[0m
+      [31m-[0m[0m file_permission      = "0777" [90m-> null[0m[0m
+      [31m-[0m[0m filename             = "modules/app_server/rendered-cloud-config-kijanikiosk-logs.yaml" [90m-> null[0m[0m
+      [31m-[0m[0m id                   = "f40efafa802a955ccc12c4f08534d7f7efb959f2" [90m-> null[0m[0m
+    }
+
+[1m  # module.app_servers["logs"].multipass_instance.this[0m will be [1m[31mdestroyed[0m
+[0m  [31m-[0m[0m resource "multipass_instance" "this" {
+      [31m-[0m[0m cloudinit_file = "modules/app_server/rendered-cloud-config-kijanikiosk-logs.yaml" [90m-> null[0m[0m
+      [31m-[0m[0m cpus           = 1 [90m-> null[0m[0m
+      [31m-[0m[0m image          = "22.04" [90m-> null[0m[0m
+      [31m-[0m[0m ipv4           = "10.145.218.88" [90m-> null[0m[0m
+      [31m-[0m[0m memory         = "1G" [90m-> null[0m[0m
+      [31m-[0m[0m name           = "kijanikiosk-logs" [90m-> null[0m[0m
+    }
+
+[1m  # module.app_servers["payments"].local_file.cloudinit_rendered[0m will be [1m[31mdestroyed[0m
+[0m  [31m-[0m[0m resource "local_file" "cloudinit_rendered" {
+      [31m-[0m[0m content              = <<-EOT
+            #cloud-config
+            users:
+              - name: ubuntu
+                sudo: ALL=(ALL) NOPASSWD:ALL
+                shell: /bin/bash
+                ssh_authorized_keys:
+                  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFDk3ksMv93R/XKmAp/Nl/UrK9cSDN1vs+BwKC7ct1Wk abraham-thinkpad
+        EOT [90m-> null[0m[0m
+      [31m-[0m[0m content_base64sha256 = "WjOzqPhW++9RXAJ9HU1gcBCWpLX7Mwm0CvEVebDG/dg=" [90m-> null[0m[0m
+      [31m-[0m[0m content_base64sha512 = "RO+5XGKkbCU/Sawj3BYZNXIY8EID/tgHY9fwcF3YQL+NmU6HCQpwzbzu8+UNitTeU4hahNvbS+i73GzXQUzlzw==" [90m-> null[0m[0m
+      [31m-[0m[0m content_md5          = "95720379ad805783568227050e17a037" [90m-> null[0m[0m
+      [31m-[0m[0m content_sha1         = "f40efafa802a955ccc12c4f08534d7f7efb959f2" [90m-> null[0m[0m
+      [31m-[0m[0m content_sha256       = "5a33b3a8f856fbef515c027d1d4d60701096a4b5fb3309b40af11579b0c6fdd8" [90m-> null[0m[0m
+      [31m-[0m[0m content_sha512       = "44efb95c62a46c253f49ac23dc1619357218f04203fed80763d7f0705dd840bf8d994e87090a70cdbceef3e50d8ad4de53885a84dbdb4be8bbdc6cd7414ce5cf" [90m-> null[0m[0m
+      [31m-[0m[0m directory_permission = "0777" [90m-> null[0m[0m
+      [31m-[0m[0m file_permission      = "0777" [90m-> null[0m[0m
+      [31m-[0m[0m filename             = "modules/app_server/rendered-cloud-config-kijanikiosk-payments.yaml" [90m-> null[0m[0m
+      [31m-[0m[0m id                   = "f40efafa802a955ccc12c4f08534d7f7efb959f2" [90m-> null[0m[0m
+    }
+
+[1m  # module.app_servers["payments"].multipass_instance.this[0m will be [1m[31mdestroyed[0m
+[0m  [31m-[0m[0m resource "multipass_instance" "this" {
+      [31m-[0m[0m cloudinit_file = "modules/app_server/rendered-cloud-config-kijanikiosk-payments.yaml" [90m-> null[0m[0m
+      [31m-[0m[0m cpus           = 1 [90m-> null[0m[0m
+      [31m-[0m[0m image          = "22.04" [90m-> null[0m[0m
+      [31m-[0m[0m ipv4           = "10.145.218.121" [90m-> null[0m[0m
+      [31m-[0m[0m memory         = "1G" [90m-> null[0m[0m
+      [31m-[0m[0m name           = "kijanikiosk-payments" [90m-> null[0m[0m
+    }
+
+[1mPlan:[0m [0m0 to add, 0 to change, 6 to destroy.
+
+Changes to Outputs:
+  [31m-[0m[0m cluster_ips = {
+      [31m-[0m[0m api      = "10.145.218.110"
+      [31m-[0m[0m logs     = "10.145.218.88"
+      [31m-[0m[0m payments = "10.145.218.121"
+    } [90m-> null[0m[0m
+[0m[1mmodule.app_servers["logs"].multipass_instance.this: Destroying... [name=kijanikiosk-logs][0m[0m
+[0m[1mmodule.app_servers["payments"].multipass_instance.this: Destroying... [name=kijanikiosk-payments][0m[0m
+[0m[1mmodule.app_servers["api"].multipass_instance.this: Destroying... [name=kijanikiosk-api][0m[0m
+[0m[1mmodule.app_servers["payments"].multipass_instance.this: Destruction complete after 1s[0m
+[0m[1mmodule.app_servers["payments"].local_file.cloudinit_rendered: Destroying... [id=f40efafa802a955ccc12c4f08534d7f7efb959f2][0m[0m
+[0m[1mmodule.app_servers["payments"].local_file.cloudinit_rendered: Destruction complete after 0s[0m
+[0m[1mmodule.app_servers["logs"].multipass_instance.this: Destruction complete after 2s[0m
+[0m[1mmodule.app_servers["logs"].local_file.cloudinit_rendered: Destroying... [id=f40efafa802a955ccc12c4f08534d7f7efb959f2][0m[0m
+[0m[1mmodule.app_servers["logs"].local_file.cloudinit_rendered: Destruction complete after 0s[0m
+[0m[1mmodule.app_servers["api"].multipass_instance.this: Destruction complete after 2s[0m
+[0m[1mmodule.app_servers["api"].local_file.cloudinit_rendered: Destroying... [id=f40efafa802a955ccc12c4f08534d7f7efb959f2][0m[0m
+[0m[1mmodule.app_servers["api"].local_file.cloudinit_rendered: Destruction complete after 0s[0m
+[0m[1m[32m
+Destroy complete! Resources: 6 destroyed.[0m

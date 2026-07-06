@@ -1,0 +1,127 @@
+---
+- name: Execute System Hardening Orchestration Protocol
+  hosts: kijanikiosk
+  become: true
+
+  handlers:
+    - name: Reload systemd daemon execution architecture
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Cycle systemd services engine runtime states
+      ansible.builtin.systemd:
+        name: "{{ service_name }}.service"
+        state: restarted
+      failed_when: >
+        ansible_failed_result is defined and 
+        "Could not find the requested service" not in ansible_failed_result.msg and
+        not ansible_check_mode
+
+    - name: Flush journald configuration buffer boundaries
+      ansible.builtin.systemd:
+        name: systemd-journald
+        state: restarted
+
+  tasks:
+    - name: Operational index update phase execution
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Binary dependency package tracking verification matches target baseline
+      ansible.builtin.apt:
+        name: "{{ required_packages }}"
+        state: present
+        install_recommends: false
+
+    - name: System security operational permissions grouping allocation
+      ansible.builtin.group:
+        name: "{{ service_group }}"
+        state: present
+        system: true
+
+    - name: Secure service context target boundary isolation profiling
+      ansible.builtin.user:
+        name: "{{ service_name }}"
+        group: "{{ service_group }}"
+        shell: /usr/sbin/nologin
+        create_home: false
+        system: true
+        state: present
+
+    - name: System directory trees mapping and verification
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ service_name }}"
+        group: "{{ service_group }}"
+        mode: "0750"
+      loop:
+        - "{{ base_dir }}"
+        - "{{ base_dir }}/bin"
+        - "{{ base_dir }}/config"
+        - "{{ log_dir }}"
+
+    - name: Inject application isolated runtime parameters configuration variables metadata
+      ansible.builtin.copy:
+        content: "PORT={{ service_port }}\nNODE_ENV=staging\nENGINE_TARGET={{ service_name }}"
+        dest: "{{ base_dir }}/config/{{ service_name }}.env"
+        owner: "{{ service_name }}"
+        group: "{{ service_group }}"
+        mode: "0640"
+
+    - name: Systemd configuration generation sequence from j2 source matrix definitions
+      ansible.builtin.template:
+        src: templates/service.unit.j2
+        dest: "/etc/systemd/system/{{ service_name }}.service"
+        owner: root
+        group: root
+        mode: "0644"
+      notify:
+        - Reload systemd daemon execution architecture
+        - Cycle systemd services engine runtime states
+
+    - name: Intermediate structural context alignment flush execution
+      ansible.builtin.meta: flush_handlers
+
+    - name: Register local targets running configuration properties
+      ansible.builtin.systemd:
+        name: "{{ service_name }}.service"
+        enabled: true
+
+    - name: Configure network routing profiles
+      community.general.ufw:
+        state: enabled
+        default: deny
+        direction: incoming
+
+    - name: Explicit secure management traversal tunnel access configuration
+      community.general.ufw:
+        rule: allow
+        port: "22"
+        proto: tcp
+        from_ip: '10.145.218.0/24'
+
+    - name: Structural firewall traffic route boundary restriction profile
+      community.general.ufw:
+        rule: allow
+        port: "{{ service_port | string }}"
+        proto: tcp
+        from_ip: 127.0.0.1
+
+    - name: Ensure journald storage persistence targets exist
+      ansible.builtin.file:
+        path: /var/log/journal
+        state: directory
+        owner: root
+        group: systemd-journal
+        mode: "2755"
+      notify: Flush journald configuration buffer boundaries
+
+    - name: Dynamic log rotation management deployment from script source definition templates
+      ansible.builtin.template:
+        src: templates/logrotate.j2
+        dest: /etc/logrotate.d/kijanikiosk
+        owner: root
+        group: root
+        mode: "0644"
