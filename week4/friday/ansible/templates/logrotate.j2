@@ -1,0 +1,12 @@
+{{ log_dir }}/*.log {
+    daily
+    rotate 7
+    missingok
+    notifempty
+    compress
+    delaycompress
+    sharedscripts
+    postrotate
+        systemctl reload kijanikiosk-* > /dev/null 2>&1 || true
+    endscript
+}

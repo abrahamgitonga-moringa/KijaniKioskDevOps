@@ -1,0 +1,28 @@
+[Unit]
+Description=KijaniKiosk Engine Core Daemon Framework Service Architecture
+After=network.target
+
+[Service]
+Type=simple
+User={{ service_name }}
+Group={{ service_group }}
+EnvironmentFile={{ base_dir }}/config/{{ service_name }}.env
+ExecStart=/usr/bin/python3 -m http.server {{ service_port }}
+Restart=always
+RestartSec=5s
+
+# Core Hardening Matrix Enforcements Block Strategy
+{% if harden_payments is defined and harden_payments %}
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+NoNewPrivileges=true
+CapabilityBoundingSet=~CAP_SYS_ADMIN CAP_NET_ADMIN
+RestrictNamespaces=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+SystemCallFilter=@system-service
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target
