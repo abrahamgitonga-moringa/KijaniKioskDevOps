@@ -1,0 +1,14 @@
+# Local .terraform working folder
+.terraform/
+.terraform.lock.hcl
+
+# State tracking files
+*.tfstate
+*.tfstate.backup
+
+# Variable values containing secrets or custom user inputs
+*.tfvars
+*.tfvars.json
+
+# Saved binary plans
+*.tfplan
