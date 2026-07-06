@@ -1,0 +1,17 @@
+[Unit]
+Description=KijaniKiosk Microservice Engine - {{ service_name }}
+After=network.target
+
+[Service]
+Type=simple
+User={{ service_name }}
+Group={{ service_group }}
+Environment=NODE_ENV=staging PORT={{ service_port }}
+ExecStart=/usr/bin/echo "Running KijaniKiosk Backend Service Core on Port {{ service_port }}"
+Restart=on-failure
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

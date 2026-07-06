@@ -1,0 +1,124 @@
+---
+- name: Configure KijaniKiosk Engine Cluster
+  hosts: kijanikiosk
+  become: true
+  become_method: sudo
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Restart service
+      ansible.builtin.systemd:
+        name: "{{ service_name }}.service"
+        state: restarted
+      # Prevents check-run failures when the service file doesn't physically exist yet
+      failed_when: >
+        ansible_failed_result is defined and 
+        "Could not find the requested service" not in ansible_failed_result.msg and
+        not ansible_check_mode
+
+    - name: Restart journald
+      ansible.builtin.systemd:
+        name: systemd-journald
+        state: restarted
+  tasks:
+    # --- PHASE 1: SYSTEM PACKAGES ---
+    - name: Synchronize apt operating caches
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install platform prerequisite packages
+      ansible.builtin.apt:
+        name: "{{ required_packages }}"
+        state: present
+        install_recommends: false
+
+    # --- PHASE 2: SECURE SYSTEM ACCOUNT ENFORCEMENT ---
+    - name: Create platform infrastructure team group
+      ansible.builtin.group:
+        name: "{{ service_group }}"
+        state: present
+        system: true
+
+    - name: Provision unprivileged isolation service account
+      ansible.builtin.user:
+        name: "{{ service_name }}"
+        group: "{{ service_group }}"
+        shell: /usr/sbin/nologin
+        create_home: false
+        system: true
+        state: present
+
+    # --- PHASE 3: SECURE DIRECTORY LAYER BOUNDARIES ---
+    - name: Provision standard directory tree matrix
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ service_name }}"
+        group: "{{ service_group }}"
+        mode: "0750"
+      loop:
+        - "{{ base_dir }}"
+        - "{{ base_dir }}/bin"
+        - "{{ log_dir }}"
+
+    # --- PHASE 4: SYSTEMD ORCHESTRATION ---
+    - name: Deploy dynamic systemd service configuration matrix
+      ansible.builtin.template:
+        src: templates/service.unit.j2
+        dest: "/etc/systemd/system/{{ service_name }}.service"
+        owner: root
+        group: root
+        mode: "0644"
+      notify:
+        - Reload systemd
+        - Restart service
+
+    - name: Flush handlers to force daemon reloads before starting service
+      ansible.builtin.meta: flush_handlers
+
+    - name: Enforce running engine daemon execution targets
+      ansible.builtin.systemd:
+        name: "{{ service_name }}.service"
+        enabled: true
+    # --- PHASE 5: REINFORCE NETWORKING FIREWALL BOUNDARIES ---
+    - name: Reset default firewall ingress traffic rule limits
+      community.general.ufw:
+        state: enabled
+        default: deny
+        direction: incoming
+
+    - name: Allow admin access via standard SSH communication path
+      community.general.ufw:
+        rule: allow
+        port: "22"
+        proto: tcp
+
+    - name: Restrict application internal visibility parameters to localhost
+      community.general.ufw:
+        rule: allow
+        port: "{{ service_port | string }}"
+        proto: tcp
+        from_ip: 127.0.0.1
+
+    # --- PHASE 6: SYSTEM LOG MANAGEMENT PERSISTENCE ---
+    - name: Structure persistent path matrix for internal log storage
+      ansible.builtin.file:
+        path: /var/log/journal
+        state: directory
+        owner: root
+        group: systemd-journal
+        mode: "2755"
+      notify: Restart journald
+
+    # --- PHASE 7: AUTOMATED ROTATION SYSTEM DEPLOYMENT ---
+    - name: Deploy custom logrotate configuration blocks
+      ansible.builtin.template:
+        src: templates/logrotate.j2
+        dest: /etc/logrotate.d/kijanikiosk
+        owner: root
+        group: root
+        mode: "0644"

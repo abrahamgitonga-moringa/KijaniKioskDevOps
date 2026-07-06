@@ -1,0 +1,88 @@
+
+PLAY [Configure KijaniKiosk Engine Cluster] ************************************
+
+TASK [Gathering Facts] *********************************************************
+[WARNING]: Host 'logs-staging' is using the discovered Python interpreter at '/usr/bin/python3.10', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'api-staging' is using the discovered Python interpreter at '/usr/bin/python3.10', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'payments-staging' is using the discovered Python interpreter at '/usr/bin/python3.10', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [Synchronize apt operating caches] ****************************************
+ok: [api-staging]
+ok: [logs-staging]
+ok: [payments-staging]
+
+TASK [Install platform prerequisite packages] **********************************
+ok: [payments-staging]
+ok: [api-staging]
+ok: [logs-staging]
+
+TASK [Create platform infrastructure team group] *******************************
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [Provision unprivileged isolation service account] ************************
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [Provision standard directory tree matrix] ********************************
+ok: [payments-staging] => (item=/opt/kijanikiosk)
+ok: [logs-staging] => (item=/opt/kijanikiosk)
+ok: [api-staging] => (item=/opt/kijanikiosk)
+ok: [logs-staging] => (item=/opt/kijanikiosk/bin)
+ok: [payments-staging] => (item=/opt/kijanikiosk/bin)
+ok: [api-staging] => (item=/opt/kijanikiosk/bin)
+ok: [logs-staging] => (item=/var/log/kijanikiosk)
+ok: [payments-staging] => (item=/var/log/kijanikiosk)
+ok: [api-staging] => (item=/var/log/kijanikiosk)
+
+TASK [Deploy dynamic systemd service configuration matrix] *********************
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [Flush handlers to force daemon reloads before starting service] **********
+
+TASK [Flush handlers to force daemon reloads before starting service] **********
+
+TASK [Flush handlers to force daemon reloads before starting service] **********
+
+TASK [Enforce running engine daemon execution targets] *************************
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [Reset default firewall ingress traffic rule limits] **********************
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [Allow admin access via standard SSH communication path] ******************
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+TASK [Restrict application internal visibility parameters to localhost] ********
+ok: [api-staging]
+ok: [logs-staging]
+ok: [payments-staging]
+
+TASK [Structure persistent path matrix for internal log storage] ***************
+ok: [api-staging]
+ok: [logs-staging]
+ok: [payments-staging]
+
+TASK [Deploy custom logrotate configuration blocks] ****************************
+ok: [api-staging]
+ok: [logs-staging]
+ok: [payments-staging]
+
+PLAY RECAP *********************************************************************
+api-staging                : ok=13   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+logs-staging               : ok=13   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+payments-staging           : ok=13   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
