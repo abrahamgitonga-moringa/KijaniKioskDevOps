@@ -1,7 +1,7 @@
 # Week 5 Monday Reflection: The Plumbing of CI
 
 ## Question 1: What Today's Pipeline Does Not Do
-Today's pipeline is merely a trigger verification and health check; it lacks the three properties that define true Continuous Integration (CI): automated compilation/assembly, automated testing, and artifact creation. To transform this from plumbing into a genuine CI pipeline, three distinct stages must be added to the `Jenkinsfile` directly after the `Environment Check`:
+Today's pipeline is merely a trigger verification and health check; it lacks the 3 properties that define true Continuous Integration (CI): automated compilation/assembly, automated testing, and artifact creation. To transform this from plumbing into a genuine CI pipeline, three distinct stages must be added to the `Jenkinsfile` directly after the `Environment Check`:
 
 1. **Automated Assembly/Build:** A stage must verify that the application and its dependencies can cleanly compile and combine. For our Node.js payments service, this requires adding a stage that runs `npm ci` (clean install for automated environments) to locked down versions in `package-lock.json`, followed by `npm run build` if the project uses a compiler like TypeScript.
 2. **Automated Testing:** A stage must execute the test suite against the built code. This would run `npm test`. The pipeline must catch the exit code of this command; if a test fails, the process exits with a non-zero status, and Jenkins immediately halts the build.
