@@ -1,0 +1,199 @@
+
+[1;34m==================================================================[0m
+[1;32m[PIPELINE] Initializing Terraform Execution Matrices...[0m
+[1;34m==================================================================[0m
+[0m[1mInitializing modules...[0m
+[0m[1mInitializing provider plugins found in the configuration...[0m
+- Reusing previous version of larstobi/multipass from the dependency lock file
+- Reusing previous version of hashicorp/local from the dependency lock file
+- Using previously-installed larstobi/multipass v1.4.3
+- Using previously-installed hashicorp/local v2.9.0
+
+[0m[1mInitializing the backend...[0m
+
+[0m[1mInitializing provider plugins found in the state...[0m
+- Reusing previous version of hashicorp/local
+- Reusing previous version of larstobi/multipass
+- Using previously-installed larstobi/multipass v1.4.3
+- Using previously-installed hashicorp/local v2.9.0
+
+
+[0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+[0m[32m
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.[0m
+
+[1;34m==================================================================[0m
+[1;32m[PIPELINE] Executing Declarative Structural Convergence (Apply Targets)...[0m
+[1;34m==================================================================[0m
+[0m[1mmodule.app_servers["payments"].local_file.cloudinit_rendered: Refreshing state... [id=f40efafa802a955ccc12c4f08534d7f7efb959f2][0m
+[0m[1mmodule.app_servers["logs"].local_file.cloudinit_rendered: Refreshing state... [id=f40efafa802a955ccc12c4f08534d7f7efb959f2][0m
+[0m[1mmodule.app_servers["api"].local_file.cloudinit_rendered: Refreshing state... [id=f40efafa802a955ccc12c4f08534d7f7efb959f2][0m
+[0m[1mmodule.app_servers["api"].multipass_instance.this: Refreshing state... [name=kijanikiosk-api][0m
+[0m[1mmodule.app_servers["payments"].multipass_instance.this: Refreshing state... [name=kijanikiosk-payments][0m
+[0m[1mmodule.app_servers["logs"].multipass_instance.this: Refreshing state... [name=kijanikiosk-logs][0m
+
+[0m[1m[32mNo changes.[0m[1m Your infrastructure matches the configuration.[0m
+
+[0mTerraform has compared your real infrastructure against your configuration
+and found no differences, so no changes are needed.
+[0m[1m[32m
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.[0m
+[0m[1m[32m
+Outputs:
+
+[0mcluster_ips = {
+  "api" = "10.145.218.110"
+  "logs" = "10.145.218.88"
+  "payments" = "10.145.218.121"
+}
+
+[1;34m==================================================================[0m
+[1;32m[PIPELINE] Extracting Environment Network Topography Metrics Dynamic State Vectors...[0m
+[1;34m==================================================================[0m
+
+[1;34m==================================================================[0m
+[1;32m[PIPELINE] Generating Dynamic Ansible Hosts Mapping Vector Metrics...[0m
+[1;34m==================================================================[0m
+[1;32m[SUCCESS] New Dynamic Cluster Matrix Registered:[0m
+[kijanikiosk]
+api-staging      ansible_host=10.145.218.110
+payments-staging ansible_host=10.145.218.121
+logs-staging     ansible_host=10.145.218.88
+
+[1;34m==================================================================[0m
+[1;32m[PIPELINE] Validating Cluster Connectivity Channels via ICMP Handshakes...[0m
+[1;34m==================================================================[0m
+[WARNING]: Host 'logs-staging' is using the discovered Python interpreter at '/usr/bin/python3.10', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'api-staging' is using the discovered Python interpreter at '/usr/bin/python3.10', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'payments-staging' is using the discovered Python interpreter at '/usr/bin/python3.10', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+logs-staging | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3.10"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+api-staging | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3.10"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+payments-staging | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3.10"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+
+[1;34m==================================================================[0m
+[1;32m[PIPELINE] Launching Configuration Engine Playbook Execution Core Payload...[0m
+[1;34m==================================================================[0m
+
+PLAY [Execute System Hardening Orchestration Protocol] *************************
+
+TASK [Gathering Facts] *********************************************************
+[WARNING]: Host 'api-staging' is using the discovered Python interpreter at '/usr/bin/python3.10', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'logs-staging' is using the discovered Python interpreter at '/usr/bin/python3.10', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'payments-staging' is using the discovered Python interpreter at '/usr/bin/python3.10', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+ok: [api-staging]
+ok: [logs-staging]
+ok: [payments-staging]
+
+TASK [Operational index update phase execution] ********************************
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [Binary dependency package tracking verification matches target baseline] ***
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [System security operational permissions grouping allocation] *************
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Secure service context target boundary isolation profiling] **************
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [System directory trees mapping and verification] *************************
+ok: [payments-staging] => (item=/opt/kijanikiosk)
+ok: [api-staging] => (item=/opt/kijanikiosk)
+ok: [logs-staging] => (item=/opt/kijanikiosk)
+ok: [api-staging] => (item=/opt/kijanikiosk/bin)
+ok: [payments-staging] => (item=/opt/kijanikiosk/bin)
+ok: [logs-staging] => (item=/opt/kijanikiosk/bin)
+ok: [api-staging] => (item=/opt/kijanikiosk/config)
+ok: [payments-staging] => (item=/opt/kijanikiosk/config)
+ok: [logs-staging] => (item=/opt/kijanikiosk/config)
+ok: [api-staging] => (item=/var/log/kijanikiosk)
+ok: [payments-staging] => (item=/var/log/kijanikiosk)
+ok: [logs-staging] => (item=/var/log/kijanikiosk)
+
+TASK [Inject application isolated runtime parameters configuration variables metadata] ***
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [Systemd configuration generation sequence from j2 source matrix definitions] ***
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [Intermediate structural context alignment flush execution] ***************
+
+TASK [Intermediate structural context alignment flush execution] ***************
+
+TASK [Intermediate structural context alignment flush execution] ***************
+
+TASK [Register local targets running configuration properties] *****************
+ok: [payments-staging]
+ok: [api-staging]
+ok: [logs-staging]
+
+TASK [Configure network routing profiles] **************************************
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+TASK [Explicit secure management traversal tunnel access configuration] ********
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Structural firewall traffic route boundary restriction profile] **********
+ok: [payments-staging]
+ok: [api-staging]
+ok: [logs-staging]
+
+TASK [Ensure journald storage persistence targets exist] ***********************
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [Dynamic log rotation management deployment from script source definition templates] ***
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+PLAY RECAP *********************************************************************
+api-staging                : ok=14   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+logs-staging               : ok=14   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+payments-staging           : ok=14   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+
+[1;34m==================================================================[0m
+[1;32m[PIPELINE] Pipeline Execution Successfully Stabilized and Converged.[0m
+[1;34m==================================================================[0m
