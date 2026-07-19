@@ -10,7 +10,7 @@ pipeline {
         stage('Environment Check') {
             steps {
                 echo "Build triggered for: ${env.GIT_COMMIT}"
-		sh 'sudo apt-get update && sudo apt-get install -y libatomic1'
+		
                 sh 'node --version'
                 sh 'npm --version'
             }
