@@ -1,19 +1,19 @@
 pipeline {
     agent any
+    
+    tools {
+        // Tells Jenkins to inject the pre-configured Node.js toolset
+        nodejs 'node' 
+    }
 
     stages {
         stage('Environment Check') {
             steps {
-                sh 'echo "Build triggered for: $(git log -1 --pretty=%s)"'
+                echo "Build triggered for: ${env.GIT_COMMIT}"
                 sh 'node --version'
                 sh 'npm --version'
             }
         }
-    }
-
-    post {
-        always {
-            echo "Pipeline finished. Status: ${currentBuild.result ?: 'SUCCESS'}"
-        }
+        // ... your other stages (Install, Test, etc.)
     }
 }
