@@ -1,25 +1,49 @@
 pipeline {
     agent any
-    
+
     tools {
-        // Tells Jenkins to inject the pre-configured Node.js toolset
-        nodejs 'node' 
+        nodejs 'node'
+    }
+
+    environment {
+        NODE_ENV  = 'test'
+        BUILD_DIR = 'dist'
+        APP_NAME  = 'kijanikiosk-payments'
+    }
+
+    options {
+        timeout(time: 15, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        disableConcurrentBuilds()
     }
 
     stages {
-        stage('Environment Check') {
+        stage('Build') {
             steps {
-                echo "Build triggered for: ${env.GIT_COMMIT}"
-		
-                sh 'node --version'
-                sh 'npm --version'
+                echo "Build stage: TODO"
             }
         }
-        // ... your other stages (Install, Test, etc.)
+        stage('Test') {
+            steps {
+                echo "Test stage: TODO"
+            }
+        }
+        stage('Archive') {
+            steps {
+                echo "Archive stage: TODO"
+            }
+        }
     }
+
     post {
+        success {
+            echo "Pipeline succeeded: ${APP_NAME} build ${BUILD_NUMBER}"
+        }
+        failure {
+            echo "Pipeline FAILED: ${APP_NAME} build ${BUILD_NUMBER} - check logs"
+        }
         always {
-            echo "Pipeline finished. Status: ${currentBuild.result ?: 'SUCCESS'}"
+            echo "Build URL: ${BUILD_URL}"
         }
     }
 }
