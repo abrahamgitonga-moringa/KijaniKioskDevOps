@@ -71,7 +71,7 @@ pipeline {
                         echo "//nexus:8081/repository/kijanikiosk-payments/:always-auth=true" >> .npmrc
 
                         # Pack and publish package to Nexus
-                        npm publish --registry http://localhost:8081/repository/kijanikiosk-payments/
+                        npm publish --registry http://nexus:8081/repository/kijanikiosk-payments/
 
                         # Clean up local .npmrc so credentials don't linger on workspace
                         rm -f .npmrc
