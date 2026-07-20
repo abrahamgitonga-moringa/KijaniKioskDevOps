@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS' // Ensures Node.js and npm are available in PATH
+        nodejs 'node' // Ensures Node.js and npm are available in PATH
     }
 
     environment {
