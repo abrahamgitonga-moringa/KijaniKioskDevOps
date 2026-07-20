@@ -1,0 +1,241 @@
+Started by user Abraham Gitonga
+
+Obtained Jenkinsfile from git https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins
+ in /var/jenkins_home/workspace/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+The recommended git tool is: git
+using credential github-kijanikiosk
+Cloning the remote Git repository
+Cloning repository https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps
+ > git init /var/jenkins_home/workspace/kijanikiosk-payments # timeout=10
+Fetching upstream changes from https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_ASKPASS to set credentials github-kijanikiosk
+ > git fetch --tags --force --progress -- https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision f593eb05edc463511ddafc5ed44cdda5b9b10ec8 (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f f593eb05edc463511ddafc5ed44cdda5b9b10ec8 # timeout=10
+Commit message: "file: jenkins file update 3"
+ > git rev-list --no-walk 72ad6bc879aa1b205e350f258cd53467f1108b02 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker inspect -f . node:18-alpine
+.
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] withDockerContainer
+Jenkins seems to be running inside container b051e38fc73d16daffa80067e2fdbd56dd6dc6ed3d8adc4d6060bfb6d4c9ff32
+$ docker run -t -d -u 0:0 --network host -v /tmp:/tmp -w /var/jenkins_home/workspace/kijanikiosk-payments --volumes-from b051e38fc73d16daffa80067e2fdbd56dd6dc6ed3d8adc4d6060bfb6d4c9ff32 -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** node:18-alpine cat
+$ docker top de4c1e6c20841621a14627c20abb269cc325793f6d012980998bcea8a618ef6e -eo pid,comm
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 15 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Initialize Environment)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ node -p 'require('"'"'./package.json'"'"').version'
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] echo
+Initializing release build for kijanikiosk-payments version 2.0.3-f593eb0
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Lint)
+[Pipeline] echo
+Executing fail-fast syntax and style validation...
+[Pipeline] sh
++ npm run lint
+npm error Missing script: "lint"
+npm error
+npm error Did you mean this?
+npm error   npm link # Symlink a package folder
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: /root/.npm/_logs/2026-07-20T16_55_04_044Z-debug-0.log
++ true
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] echo
+Installing dependencies and building application...
+[Pipeline] sh
++ npm ci
+
+up to date, audited 1 package in 570ms
+
+found 0 vulnerabilities
+[Pipeline] sh
++ npm run build
+
+> kijanikiosk-payments@2.0.3 build
+> echo 'Building payments service...' && mkdir -p dist && echo 'console.log("Payments Service v1.0");' > dist/app.js
+
+Building payments service...
+[Pipeline] sh
++ set -e
++ test -d dist
++ ls -A dist
++ wc -l
++ test 1 -gt 0
++ echo 'Verified output build directory: dist'
+Verified output build directory: dist
+[Pipeline] stash
+Stashed 3 file(s)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Verify)
+[Pipeline] parallel
+[Pipeline] { (Branch: Test)
+[Pipeline] { (Branch: Security Audit)
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] stage
+[Pipeline] { (Security Audit)
+[Pipeline] unstash
+[Pipeline] echo
+Auditing dependencies against known vulnerabilities...
+[Pipeline] sh
+[Pipeline] echo
+Running automated unit test suite...
+[Pipeline] sh
++ npm audit '--audit-level=high'
++ npm test
+
+> kijanikiosk-payments@2.0.3 test
+> echo 'Running unit tests...' && node -e 'console.log("Tests passed!")'
+
+Running unit tests...
+Tests passed!
+Post stage
+[Pipeline] junit
+Recording test results
+No test report files were found. Configuration error?
+None of the test reports contained any result
+[Checks API] No suitable checks publisher found.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+found 0 vulnerabilities
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // parallel
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Archive)
+[Pipeline] echo
+Archiving build outputs with fingerprinting...
+[Pipeline] archiveArtifacts
+Archiving artifacts
+Recording fingerprints
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Publish)
+[Pipeline] echo
+Publishing versioned artifact to Nexus repository...
+[Pipeline] withCredentials
+Masking supported pattern matches of $NEXUS_PASS
+[Pipeline] {
+[Pipeline] sh
++ set -e
++ trap 'rm -f .npmrc' EXIT
++ echo 'Publishing Version: 2.0.3-f593eb0'
+Publishing Version: 2.0.3-f593eb0
++ echo -n admin:****
++ base64
++ tr -d '
+'
++ AUTH_BASE64='YWRtaW46****'
++ cat
++ npm version 2.0.3-f593eb0 --no-git-tag-version
+v2.0.3-f593eb0
++ npm publish --registry http://127.0.0.1:8081/repository/kijanikiosk-payments/ --tag dev
+npm notice
+npm notice package: kijanikiosk-payments@2.0.3-f593eb0
+npm notice Tarball Contents
+npm notice 346B .github/workflows/ci.yml
+npm notice 4.6kB Jenkinsfile
+npm notice 247B README.md
+npm notice 1.9kB RUNBOOK.md
+npm notice 38B dist/app.js
+npm notice 2.9kB notes.md
+npm notice 480B package.json
+npm notice 4.2kB triage-report.md
+npm notice Tarball Details
+npm notice name: kijanikiosk-payments
+npm notice version: 2.0.3-f593eb0
+npm notice filename: kijanikiosk-payments-2.0.3-f593eb0.tgz
+npm notice package size: 6.5 kB
+npm notice unpacked size: 14.7 kB
+npm notice shasum: 3ffad62a133fce2aa1fdfad425fb6fa4594be1d2
+npm notice integrity: sha512-2jQ4O0CD4h6h4[...]Q5nHPy9AbQ4kQ==
+npm notice total files: 8
+npm notice
+npm notice Publishing to http://127.0.0.1:8081/repository/kijanikiosk-payments/ with tag dev and default access
++ kijanikiosk-payments@2.0.3-f593eb0
++ rm -f .npmrc
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] cleanWs
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] Deferred wipeout is used...
+[WS-CLEANUP] done
+[Pipeline] echo
+Workspace successfully wiped.
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] echo
+STATUS CHANGE: Build status transitioned to SUCCESS for kijanikiosk-payments #48
+[Pipeline] echo
+SUCCESS: Published kijanikiosk-payments version 2.0.3-f593eb0 to Nexus.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+$ docker stop --time=1 de4c1e6c20841621a14627c20abb269cc325793f6d012980998bcea8a618ef6e
+$ docker rm -f --volumes de4c1e6c20841621a14627c20abb269cc325793f6d012980998bcea8a618ef6e
+[Pipeline] // withDockerContainer
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
+
