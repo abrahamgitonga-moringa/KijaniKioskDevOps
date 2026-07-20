@@ -67,8 +67,8 @@ pipeline {
                         set -e
                         # Create temporary authenticated .npmrc for Nexus
                         AUTH_BASE64=$(echo -n "${NEXUS_USER}:${NEXUS_PASS}" | base64)
-                        echo "//localhost:8081/repository/kijanikiosk-payments/:_auth=${AUTH_BASE64}" > .npmrc
-                        echo "//localhost:8081/repository/kijanikiosk-payments/:always-auth=true" >> .npmrc
+                        echo "//nexus:8081/repository/kijanikiosk-payments/:_auth=${AUTH_BASE64}" > .npmrc
+                        echo "//nexus:8081/repository/kijanikiosk-payments/:always-auth=true" >> .npmrc
 
                         # Pack and publish package to Nexus
                         npm publish --registry http://localhost:8081/repository/kijanikiosk-payments/
