@@ -1,11 +1,15 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'NodeJS' // Ensures Node.js and npm are available in PATH
+    }
+
     environment {
         NODE_ENV  = 'test'
         BUILD_DIR = 'dist'
         APP_NAME  = 'kijanikiosk-payments'
-        NEXUS_URL = 'http://nexus:8081/repository/kijanikiosk-payments/'
+        NEXUS_URL = 'http://nexus:8081/repository/kijanikiosk-payments'
     }
 
     options {
@@ -59,6 +63,12 @@ pipeline {
         stage('Publish') {
             steps {
                 echo "Publishing versioned artifact to Nexus..."
+                script {
+                    env.PKG_VERSION = sh(script: "node -p \"require('./package.json').version\"", returnStdout: true).trim()
+                    env.GIT_SHORT   = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                    env.ARTIFACT_VERSION = "${env.PKG_VERSION}-${env.GIT_SHORT}"
+                }
+                
                 withCredentials([usernamePassword(
                     credentialsId: 'nexus-credentials',
                     usernameVariable: 'NEXUS_USER',
@@ -67,17 +77,10 @@ pipeline {
                     sh '''
                         set -e
                         
-                        # 1. Setup safety cleanup trap
                         trap "rm -f .npmrc" EXIT
-                        
-                        # 2. Compute dynamic version string
-                        PKG_VERSION=$(node -p "require('./package.json').version")
-                        GIT_SHORT=$(git rev-parse --short HEAD)
-                        ARTIFACT_VERSION="${PKG_VERSION}-${GIT_SHORT}"
                         
                         echo "Target Artifact Version: ${ARTIFACT_VERSION}"
                         
-                        # 3. Generate Auth token and write temporary .npmrc
                         AUTH_BASE64=$(echo -n "${NEXUS_USER}:${NEXUS_PASS}" | base64 | tr -d '\n')
                         
                         cat <<EOF > .npmrc
@@ -85,11 +88,8 @@ pipeline {
 //nexus:8081/repository/kijanikiosk-payments/:always-auth=true
 EOF
 
-                        # 4. Update package.json dynamically before publish
                         npm version "${ARTIFACT_VERSION}" --no-git-tag-version
-                        
-                        # 5. Publish artifact to Nexus
-                        npm publish --registry "${NEXUS_URL}"
+                        npm publish --registry "${NEXUS_URL}/"
                     '''
                 }
             }
@@ -98,7 +98,8 @@ EOF
 
     post {
         success {
-            echo "Published ${APP_NAME} version successfully to Nexus."
+            echo "Published ${APP_NAME} version ${ARTIFACT_VERSION} to Nexus"
+            echo "Artifact URL: ${NEXUS_URL}/${APP_NAME}/-/${APP_NAME}-${ARTIFACT_VERSION}.tgz"
         }
         failure {
             echo "Pipeline FAILED at build ${BUILD_NUMBER} - check logs at ${BUILD_URL}"
