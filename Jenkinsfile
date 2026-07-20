@@ -26,10 +26,10 @@ pipeline {
                 echo "Building application..."
                 sh 'npm run build'
 
-                echo "Verifying build workspace..."
+                echo "Verifying build output directory..."
                 sh '''
                     set -e
-                    test -d "${BUILD_DIR}" || { echo "ERROR: build directory not found"; exit 1; }
+                    test -d "${BUILD_DIR}" || { echo "ERROR: build directory ${BUILD_DIR} not found"; exit 1; }
                     echo "Build output verified: $(ls ${BUILD_DIR} | wc -l) file(s) in ${BUILD_DIR}/"
                 '''
             }
@@ -37,8 +37,11 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo "Running unit test suite for ${APP_NAME}..."
-                sh 'npm test'
+                echo "Running test suite for ${APP_NAME}..."
+                sh '''
+                    set -e
+                    npm test
+                '''
             }
             post {
                 always {
@@ -54,7 +57,7 @@ pipeline {
                 archiveArtifacts artifacts: "${BUILD_DIR}/**",
                                  fingerprint: true,
                                  onlyIfSuccessful: true
-                echo "Artifact archived. Download from: ${BUILD_URL}artifact/"
+                echo "Artifact archived. Access at: ${BUILD_URL}artifact/"
             }
         }
     }
@@ -62,12 +65,12 @@ pipeline {
     post {
         success {
             echo "Pipeline succeeded: ${APP_NAME} build ${BUILD_NUMBER}"
+            echo "Artifact URL: ${BUILD_URL}artifact/"
         }
         failure {
-            echo "Pipeline FAILED: ${APP_NAME} build ${BUILD_NUMBER} - check logs"
+            echo "Pipeline FAILED: ${APP_NAME} build ${BUILD_NUMBER} - check console logs"
         }
         always {
-            echo "Build URL: ${BUILD_URL}"
             cleanWs()
         }
     }
