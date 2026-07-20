@@ -18,12 +18,9 @@ pipeline {
         stage('Initialize Environment') {
             steps {
                 script {
-                    // Execute inside Node container
-                    docker.image('node:18-alpine').inside {
-                        env.PKG_VERSION      = sh(script: "node -p \"require('./package.json').version\"", returnStdout: true).trim()
-                        env.GIT_SHORT        = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-                        env.ARTIFACT_VERSION = "${env.PKG_VERSION}-${env.GIT_SHORT}"
-                    }
+                    env.PKG_VERSION      = sh(script: "node -p \"require('./package.json').version\"", returnStdout: true).trim()
+                    env.GIT_SHORT        = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                    env.ARTIFACT_VERSION = "${env.PKG_VERSION}-${env.GIT_SHORT}"
                 }
                 echo "Building ${APP_NAME} version ${ARTIFACT_VERSION}"
             }
@@ -31,28 +28,20 @@ pipeline {
 
         stage('Lint') {
             steps {
-                script {
-                    docker.image('node:18-alpine').inside {
-                        sh 'npm run lint || true'
-                    }
-                }
+                sh 'npm run lint || true'
             }
         }
 
         stage('Build') {
             steps {
-                script {
-                    docker.image('node:18-alpine').inside {
-                        sh 'npm ci'
-                        sh 'npm run build'
-                        sh '''
-                            set -e
-                            test -d ${BUILD_DIR}
-                            test $(ls -A ${BUILD_DIR} | wc -l) -gt 0
-                            echo "Verified build output directory: ${BUILD_DIR}"
-                        '''
-                    }
-                }
+                sh 'npm ci'
+                sh 'npm run build'
+                sh '''
+                    set -e
+                    test -d ${BUILD_DIR}
+                    test $(ls -A ${BUILD_DIR} | wc -l) -gt 0
+                    echo "Verified build output directory: ${BUILD_DIR}"
+                '''
                 stash name: 'build-artifacts', includes: "${BUILD_DIR}/**"
             }
         }
@@ -62,11 +51,7 @@ pipeline {
                 stage('Test') {
                     steps {
                         unstash 'build-artifacts'
-                        script {
-                            docker.image('node:18-alpine').inside {
-                                sh 'npm test'
-                            }
-                        }
+                        sh 'npm test'
                     }
                     post {
                         always {
@@ -76,11 +61,7 @@ pipeline {
                 }
                 stage('Security Audit') {
                     steps {
-                        script {
-                            docker.image('node:18-alpine').inside {
-                                sh 'npm audit --audit-level=high || true'
-                            }
-                        }
+                        sh 'npm audit --audit-level=high || true'
                     }
                 }
             }
@@ -101,24 +82,20 @@ pipeline {
                     usernameVariable: 'NEXUS_USER',
                     passwordVariable: 'NEXUS_PASS'
                 )]) {
-                    script {
-                        docker.image('node:18-alpine').inside {
-                            sh '''
-                                set -e
-                                trap "rm -f .npmrc" EXIT
-                                
-                                echo "Target Artifact Version: ${ARTIFACT_VERSION}"
-                                AUTH_BASE64=$(echo -n "${NEXUS_USER}:${NEXUS_PASS}" | base64 | tr -d '\n')
-                                
-                                cat <<EOF > .npmrc
+                    sh '''
+                        set -e
+                        trap "rm -f .npmrc" EXIT
+                        
+                        echo "Target Artifact Version: ${ARTIFACT_VERSION}"
+                        AUTH_BASE64=$(echo -n "${NEXUS_USER}:${NEXUS_PASS}" | base64 | tr -d '\n')
+                        
+                        cat <<EOF > .npmrc
 //nexus:8081/repository/kijanikiosk-payments/:_auth=${AUTH_BASE64}
 EOF
 
-                                npm version "${ARTIFACT_VERSION}" --no-git-tag-version
-                                npm publish --registry "${NEXUS_URL}/" --tag dev
-                            '''
-                        }
-                    }
+                        npm version "${ARTIFACT_VERSION}" --no-git-tag-version
+                        npm publish --registry "${NEXUS_URL}/" --tag dev
+                    '''
                 }
             }
         }
