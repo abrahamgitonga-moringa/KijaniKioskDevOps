@@ -1,16 +1,10 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:18-alpine'
-            args  '-v /tmp:/tmp'
-        }
-    }
+    agent any
 
     environment {
         NODE_ENV  = 'test'
         BUILD_DIR = 'dist'
         APP_NAME  = 'kijanikiosk-payments'
-        // Dynamic version environment variables set in initialization stage
         NEXUS_URL = 'http://nexus:8081/repository/kijanikiosk-payments'
     }
 
@@ -35,7 +29,7 @@ pipeline {
         stage('Lint') {
             steps {
                 echo "Running code quality and syntax checks..."
-                sh 'npm run lint || true' // Executes linter before build step
+                sh 'npm run lint || true'
             }
         }
 
@@ -45,7 +39,6 @@ pipeline {
                 sh 'npm ci'
                 sh 'npm run build'
                 
-                // Verify output exists and is non-empty
                 sh '''
                     set -e
                     test -d ${BUILD_DIR}
@@ -53,7 +46,6 @@ pipeline {
                     echo "Verified build output directory: ${BUILD_DIR}"
                 '''
                 
-                // Stash build artifacts for downstream parallel verification
                 stash name: 'build-artifacts', includes: "${BUILD_DIR}/**"
             }
         }
@@ -120,16 +112,19 @@ EOF
     post {
         success {
             echo "Published ${APP_NAME} version ${ARTIFACT_VERSION} to Nexus"
-            echo "Artifact URL: ${NEXUS_URL}/${APP_NAME}/-/${APP_NAME}-${ARTIFACT_VERSION}.tgz"
         }
         failure {
             echo "Pipeline FAILED at build ${BUILD_NUMBER} - check console logs at ${BUILD_URL}"
         }
-        changed {
-            echo "Build status changed to ${currentBuild.currentResult} - ${JOB_NAME} #${BUILD_NUMBER}"
-        }
         always {
-            cleanWs()
+            script {
+                // Safeguard cleanWs so it doesn't throw when no workspace node exists
+                try {
+                    cleanWs()
+                } catch (Exception e) {
+                    echo "Skipped workspace cleanup: ${e.message}"
+                }
+            }
         }
     }
 }
