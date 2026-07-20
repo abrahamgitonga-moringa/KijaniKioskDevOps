@@ -2,9 +2,12 @@
   "name": "kijanikiosk-payments",
   "version": "1.0.0",
   "description": "KijaniKiosk Payments Service",
-  "main": "index.js",
+  "main": "dist/app.js",
   "scripts": {
     "build": "echo 'Building payments service...' && mkdir -p dist && echo 'console.log(\"Payments Service v1.0\");' > dist/app.js",
     "test": "echo 'Running unit tests...' && node -e 'console.log(\"Tests passed!\")'"
+  },
+  "publishConfig": {
+    "registry": "http://localhost:8081/repository/kijanikiosk-payments/"
   }
 }
