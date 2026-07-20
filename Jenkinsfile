@@ -9,7 +9,7 @@ pipeline {
         NODE_ENV   = 'test'
         BUILD_DIR  = 'dist'
         APP_NAME   = 'kijanikiosk-payments'
-        NEXUS_URL  = 'http://localhost:8081/repository/kijanikiosk-payments/'
+        NEXUS_URL  = 'http://nexus:8081/repository/kijanikiosk-payments/'
     }
 
     options {
