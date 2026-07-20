@@ -1,0 +1,209 @@
+Started by user Abraham Gitonga
+
+Obtained Jenkinsfile from git https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins
+ in /var/jenkins_home/workspace/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+The recommended git tool is: git
+using credential github-kijanikiosk
+Cloning the remote Git repository
+Cloning repository https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps
+ > git init /var/jenkins_home/workspace/kijanikiosk-payments # timeout=10
+Fetching upstream changes from https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_ASKPASS to set credentials github-kijanikiosk
+ > git fetch --tags --force --progress -- https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision 76a99d9b21c6956aa4349c53181da3df3d9614bc (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 76a99d9b21c6956aa4349c53181da3df3d9614bc # timeout=10
+Commit message: "ci: update Jenkinsfile with Publish stage and bump version to 2.0.1"
+ > git rev-list --no-walk 6f0681af9f57b60a805b5fec40e4e72ed53bca4b # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 15 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Initialize Environment)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ node -p require('./package.json').version
+[Pipeline] sh
++ git rev-parse --short HEAD
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] echo
+Building kijanikiosk-payments version 2.0.1-76a99d9
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Lint)
+[Pipeline] sh
++ npm run lint
+npm error Missing script: "lint"
+npm error
+npm error Did you mean this?
+npm error   npm link # Symlink a package folder
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: /var/jenkins_home/.npm/_logs/2026-07-20T13_55_09_358Z-debug-0.log
++ true
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] sh
++ npm ci
+
+up to date, audited 1 package in 165ms
+
+found 0 vulnerabilities
+[Pipeline] sh
++ npm run build
+
+> kijanikiosk-payments@2.0.1 build
+> echo 'Building payments service...' && mkdir -p dist && echo 'console.log("Payments Service v1.0");' > dist/app.js
+
+Building payments service...
+[Pipeline] sh
++ set -e
++ test -d dist
++ ls -A dist
++ wc -l
++ test 1 -gt 0
++ echo Verified build output directory: dist
+Verified build output directory: dist
+[Pipeline] stash
+Stashed 1 file(s)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Verify)
+[Pipeline] parallel
+[Pipeline] { (Branch: Test)
+[Pipeline] { (Branch: Security Audit)
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] stage
+[Pipeline] { (Security Audit)
+[Pipeline] unstash
+[Pipeline] sh
+[Pipeline] sh
++ npm audit --audit-level=high
+found 0 vulnerabilities
+[Pipeline] }
+[Pipeline] // stage
++ npm test
+
+> kijanikiosk-payments@2.0.1 test
+> echo 'Running unit tests...' && node -e 'console.log("Tests passed!")'
+
+Running unit tests...
+Tests passed!
+[Pipeline] }
+Post stage
+[Pipeline] junit
+Recording test results
+No test report files were found. Configuration error?
+None of the test reports contained any result
+[Checks API] No suitable checks publisher found.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // parallel
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Archive)
+[Pipeline] archiveArtifacts
+Archiving artifacts
+Recording fingerprints
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Publish)
+[Pipeline] withCredentials
+Masking supported pattern matches of $NEXUS_PASS
+[Pipeline] {
+[Pipeline] sh
++ set -e
++ trap rm -f .npmrc EXIT
++ echo Target Artifact Version: 2.0.1-76a99d9
+Target Artifact Version: 2.0.1-76a99d9
++ echo -n admin:****
++ base64
++ tr -d 
+
++ AUTH_BASE64=YWRtaW46****
++ cat
++ npm version 2.0.1-76a99d9 --no-git-tag-version
+v2.0.1-76a99d9
++ npm publish --registry http://nexus:8081/repository/kijanikiosk-payments/ --tag dev
+npm notice
+npm notice 📦  kijanikiosk-payments@2.0.1-76a99d9
+npm notice Tarball Contents
+npm notice 346B .github/workflows/ci.yml
+npm notice 3.8kB Jenkinsfile
+npm notice 247B README.md
+npm notice 1.9kB RUNBOOK.md
+npm notice 38B dist/app.js
+npm notice 2.9kB notes.md
+npm notice 480B package.json
+npm notice 4.2kB triage-report.md
+npm notice Tarball Details
+npm notice name: kijanikiosk-payments
+npm notice version: 2.0.1-76a99d9
+npm notice filename: kijanikiosk-payments-2.0.1-76a99d9.tgz
+npm notice package size: 6.2 kB
+npm notice unpacked size: 13.9 kB
+npm notice shasum: 1dc618a7f118d18a8a3eb94881f2082a58cbc9a6
+npm notice integrity: sha512-n+GniJsxUbUW2[...]W8zE4k8sdb8CQ==
+npm notice total files: 8
+npm notice
+npm notice Publishing to http://nexus:8081/repository/kijanikiosk-payments/ with tag dev and default access
++ kijanikiosk-payments@2.0.1-76a99d9
++ rm -f .npmrc
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] cleanWs
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] Deferred wipeout is used...
+[WS-CLEANUP] done
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] echo
+Published kijanikiosk-payments version 2.0.1-76a99d9 to Nexus
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
