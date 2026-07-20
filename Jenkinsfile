@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'node:18-alpine'
-            args  '--add-host=host.docker.internal:host-gateway -v /tmp:/tmp'
+            args  '--network host -v /tmp:/tmp'
         }
     }
 
@@ -10,8 +10,7 @@ pipeline {
         NODE_ENV  = 'test'
         BUILD_DIR = 'dist'
         APP_NAME  = 'kijanikiosk-payments'
-        // Point to host.docker.internal mapped via the agent args above
-        NEXUS_URL = 'http://host.docker.internal:8081/repository/kijanikiosk-payments'
+        NEXUS_URL = 'http://127.0.0.1:8081/repository/kijanikiosk-payments'
     }
 
     options {
@@ -104,7 +103,7 @@ pipeline {
                         AUTH_BASE64=$(echo -n "${NEXUS_USER}:${NEXUS_PASS}" | base64 | tr -d '\n')
                         
                         cat <<EOF > .npmrc
-//host.docker.internal:8081/repository/kijanikiosk-payments/:_auth=${AUTH_BASE64}
+//127.0.0.1:8081/repository/kijanikiosk-payments/:_auth=${AUTH_BASE64}
 EOF
 
                         npm version "${ARTIFACT_VERSION}" --no-git-tag-version
