@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'node'
-    }
-
     environment {
         NODE_ENV  = 'test'
         BUILD_DIR = 'dist'
@@ -20,7 +16,18 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo "Build stage: TODO"
+                echo "Preparing build environment for ${APP_NAME}..."
+                sh '''
+                    set -e
+                    chmod +x *.sh || true
+                    if [ -f "./pipeline.sh" ]; then
+                        echo "Executing pipeline.sh build step..."
+                        ./pipeline.sh build || bash pipeline.sh
+                    else
+                        echo "pipeline.sh not found in root directory, checking files..."
+                        ls -la
+                    fi
+                '''
             }
         }
         stage('Test') {
@@ -44,6 +51,7 @@ pipeline {
         }
         always {
             echo "Build URL: ${BUILD_URL}"
+            cleanWs()
         }
     }
 }
