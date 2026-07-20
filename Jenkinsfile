@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'node'
+    }
+
     environment {
         NODE_ENV  = 'test'
         BUILD_DIR = 'dist'
@@ -16,25 +20,27 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo "Preparing build environment for ${APP_NAME}..."
+                echo "Installing dependencies for ${APP_NAME}..."
+                sh 'npm ci'
+
+                echo "Building application..."
+                sh 'npm run build'
+
+                echo "Verifying build workspace..."
                 sh '''
                     set -e
-                    chmod +x *.sh || true
-                    if [ -f "./pipeline.sh" ]; then
-                        echo "Executing pipeline.sh build step..."
-                        ./pipeline.sh build || bash pipeline.sh
-                    else
-                        echo "pipeline.sh not found in root directory, checking files..."
-                        ls -la
-                    fi
+                    test -d "${BUILD_DIR}" || { echo "ERROR: build directory not found"; exit 1; }
+                    echo "Build output verified: $(ls ${BUILD_DIR} | wc -l) file(s) in ${BUILD_DIR}/"
                 '''
             }
         }
+
         stage('Test') {
             steps {
                 echo "Test stage: TODO"
             }
         }
+
         stage('Archive') {
             steps {
                 echo "Archive stage: TODO"
