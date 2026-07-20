@@ -10,8 +10,8 @@ pipeline {
         NODE_ENV  = 'test'
         BUILD_DIR = 'dist'
         APP_NAME  = 'kijanikiosk-payments'
-        // Using Docker host bridge IP to avoid local container lookup loops
-        NEXUS_URL = 'http://172.17.0.1:8081/repository/kijanikiosk-payments'
+        // Point to host.docker.internal mapped via the agent args above
+        NEXUS_URL = 'http://host.docker.internal:8081/repository/kijanikiosk-payments'
     }
 
     options {
@@ -25,7 +25,6 @@ pipeline {
             steps {
                 script {
                     env.PKG_VERSION      = sh(script: "node -p \"require('./package.json').version\"", returnStdout: true).trim()
-                    // Extract first 7 characters of GIT_COMMIT provided natively by Jenkins SCM
                     env.GIT_SHORT        = env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'local'
                     env.ARTIFACT_VERSION = "${env.PKG_VERSION}-${env.GIT_SHORT}"
                 }
@@ -53,7 +52,6 @@ pipeline {
                     echo "Verified output build directory: ${BUILD_DIR}"
                 '''
                 
-                // Stashing package files alongside output to solve Integration Challenge B
                 stash name: 'build-artifacts', includes: "${BUILD_DIR}/**,package.json,package-lock.json"
             }
         }
@@ -106,7 +104,7 @@ pipeline {
                         AUTH_BASE64=$(echo -n "${NEXUS_USER}:${NEXUS_PASS}" | base64 | tr -d '\n')
                         
                         cat <<EOF > .npmrc
-//172.17.0.1:8081/repository/kijanikiosk-payments/:_auth=${AUTH_BASE64}
+//host.docker.internal:8081/repository/kijanikiosk-payments/:_auth=${AUTH_BASE64}
 EOF
 
                         npm version "${ARTIFACT_VERSION}" --no-git-tag-version
@@ -120,10 +118,9 @@ EOF
     post {
         success {
             echo "SUCCESS: Published ${APP_NAME} version ${ARTIFACT_VERSION} to Nexus."
-            echo "Artifact URL: ${NEXUS_URL}/${APP_NAME}/-/${APP_NAME}-${ARTIFACT_VERSION}.tgz"
         }
         failure {
-            echo "FAILURE: Pipeline build ${BUILD_NUMBER} failed. Review logs at ${BUILD_URL}"
+            echo "FAILURE: Pipeline build ${BUILD_NUMBER} failed."
         }
         changed {
             echo "STATUS CHANGE: Build status transitioned to ${currentBuild.currentResult} for ${JOB_NAME} #${BUILD_NUMBER}"
