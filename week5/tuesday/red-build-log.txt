@@ -1,0 +1,137 @@
+Started by user Abraham Gitonga
+
+Obtained Jenkinsfile from git https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins
+ in /var/jenkins_home/workspace/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+The recommended git tool is: git
+using credential github-kijanikiosk
+Cloning the remote Git repository
+Cloning repository https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps
+ > git init /var/jenkins_home/workspace/kijanikiosk-payments # timeout=10
+Fetching upstream changes from https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_ASKPASS to set credentials github-kijanikiosk
+ > git fetch --tags --force --progress -- https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision 9888f838bfa804f5ee8e4fcb2a37ee25158712fd (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 9888f838bfa804f5ee8e4fcb2a37ee25158712fd # timeout=10
+Commit message: "test: deliberate failure to verify CI pipeline stops on failure"
+ > git rev-list --no-walk 0c4b1b81d36abfe8c1d7b3c1231f5e8d10ad28b2 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 15 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Tool Install)
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] echo
+Installing dependencies for kijanikiosk-payments...
+[Pipeline] sh
++ npm ci
+
+up to date, audited 1 package in 106ms
+
+found 0 vulnerabilities
+[Pipeline] echo
+Building application...
+[Pipeline] sh
++ npm run build
+
+> kijanikiosk-payments@1.0.0 build
+> echo 'Building payments service...' && mkdir -p dist && echo 'console.log("Payments Service v1.0");' > dist/app.js
+
+Building payments service...
+[Pipeline] echo
+Verifying build output directory...
+[Pipeline] sh
++ set -e
++ test -d dist
++ ls dist
++ wc -l
++ echo Build output verified: 1 file(s) in dist/
+Build output verified: 1 file(s) in dist/
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] echo
+Running test suite for kijanikiosk-payments...
+[Pipeline] sh
++ set -e
++ npm test
+
+> kijanikiosk-payments@1.0.0 test
+> echo 'ci-pipeline-verification: deliberate failure' && node -e 'process.exit(1)'
+
+ci-pipeline-verification: deliberate failure
+Post stage
+[Pipeline] junit
+Recording test results
+No test report files were found. Configuration error?
+[Checks API] No suitable checks publisher found.
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Archive)
+Stage "Archive" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] cleanWs
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] Deferred wipeout is used...
+[WS-CLEANUP] done
+[Pipeline] echo
+Pipeline FAILED: kijanikiosk-payments build 17 - check console logs
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE
