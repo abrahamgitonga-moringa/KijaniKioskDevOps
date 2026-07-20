@@ -6,9 +6,10 @@ pipeline {
     }
 
     environment {
-        NODE_ENV  = 'test'
-        BUILD_DIR = 'dist'
-        APP_NAME  = 'kijanikiosk-payments'
+        NODE_ENV   = 'test'
+        BUILD_DIR  = 'dist'
+        APP_NAME   = 'kijanikiosk-payments'
+        NEXUS_URL  = 'http://localhost:8081/repository/kijanikiosk-payments/'
     }
 
     options {
@@ -26,10 +27,10 @@ pipeline {
                 echo "Building application..."
                 sh 'npm run build'
 
-                echo "Verifying build output directory..."
+                echo "Verifying build workspace..."
                 sh '''
                     set -e
-                    test -d "${BUILD_DIR}" || { echo "ERROR: build directory ${BUILD_DIR} not found"; exit 1; }
+                    test -d "${BUILD_DIR}" || { echo "ERROR: build directory not found"; exit 1; }
                     echo "Build output verified: $(ls ${BUILD_DIR} | wc -l) file(s) in ${BUILD_DIR}/"
                 '''
             }
@@ -37,11 +38,8 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo "Running test suite for ${APP_NAME}..."
-                sh '''
-                    set -e
-                    npm test
-                '''
+                echo "Running unit test suite for ${APP_NAME}..."
+                sh 'npm test'
             }
             post {
                 always {
@@ -60,12 +58,33 @@ pipeline {
                 echo "Artifact archived. Access at: ${BUILD_URL}artifact/"
             }
         }
+
+        stage('Publish') {
+            steps {
+                echo "Publishing ${APP_NAME} versioned artifact to Nexus..."
+                withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
+                    sh '''
+                        set -e
+                        # Create temporary authenticated .npmrc for Nexus
+                        AUTH_BASE64=$(echo -n "${NEXUS_USER}:${NEXUS_PASS}" | base64)
+                        echo "//localhost:8081/repository/kijanikiosk-payments/:_auth=${AUTH_BASE64}" > .npmrc
+                        echo "//localhost:8081/repository/kijanikiosk-payments/:always-auth=true" >> .npmrc
+
+                        # Pack and publish package to Nexus
+                        npm publish --registry http://localhost:8081/repository/kijanikiosk-payments/
+
+                        # Clean up local .npmrc so credentials don't linger on workspace
+                        rm -f .npmrc
+                    '''
+                }
+            }
+        }
     }
 
     post {
         success {
             echo "Pipeline succeeded: ${APP_NAME} build ${BUILD_NUMBER}"
-            echo "Artifact URL: ${BUILD_URL}artifact/"
+            echo "Artifact Published to Nexus: ${NEXUS_URL}"
         }
         failure {
             echo "Pipeline FAILED: ${APP_NAME} build ${BUILD_NUMBER} - check console logs"
