@@ -1,0 +1,5 @@
+assets/
+week*/
+.terraform/
+*.log
+*.png
