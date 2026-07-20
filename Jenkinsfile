@@ -37,13 +37,24 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo "Test stage: TODO"
+                echo "Running unit test suite for ${APP_NAME}..."
+                sh 'npm test'
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true,
+                          testResults: 'test-results/*.xml'
+                }
             }
         }
 
         stage('Archive') {
             steps {
-                echo "Archive stage: TODO"
+                echo "Archiving build artifact for ${APP_NAME} build ${BUILD_NUMBER}..."
+                archiveArtifacts artifacts: "${BUILD_DIR}/**",
+                                 fingerprint: true,
+                                 onlyIfSuccessful: true
+                echo "Artifact archived. Download from: ${BUILD_URL}artifact/"
             }
         }
     }
