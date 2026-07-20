@@ -1,6 +1,6 @@
 {
   "name": "kijanikiosk-payments",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "KijaniKiosk Payments Service",
   "main": "dist/app.js",
   "scripts": {

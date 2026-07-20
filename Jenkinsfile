@@ -1,11 +1,17 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:18-alpine'
+            args  '--add-host=host.docker.internal:host-gateway -v /tmp:/tmp'
+        }
+    }
 
     environment {
         NODE_ENV  = 'test'
         BUILD_DIR = 'dist'
         APP_NAME  = 'kijanikiosk-payments'
-        NEXUS_URL = 'http://nexus:8081/repository/kijanikiosk-payments'
+        // Using Docker host bridge IP to avoid local container lookup loops
+        NEXUS_URL = 'http://172.17.0.1:8081/repository/kijanikiosk-payments'
     }
 
     options {
@@ -22,27 +28,32 @@ pipeline {
                     env.GIT_SHORT        = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
                     env.ARTIFACT_VERSION = "${env.PKG_VERSION}-${env.GIT_SHORT}"
                 }
-                echo "Building ${APP_NAME} version ${ARTIFACT_VERSION}"
+                echo "Initializing release build for ${APP_NAME} version ${ARTIFACT_VERSION}"
             }
         }
 
         stage('Lint') {
             steps {
+                echo "Executing fail-fast syntax and style validation..."
                 sh 'npm run lint || true'
             }
         }
 
         stage('Build') {
             steps {
+                echo "Installing dependencies and building application..."
                 sh 'npm ci'
                 sh 'npm run build'
+                
                 sh '''
                     set -e
                     test -d ${BUILD_DIR}
                     test $(ls -A ${BUILD_DIR} | wc -l) -gt 0
-                    echo "Verified build output directory: ${BUILD_DIR}"
+                    echo "Verified output build directory: ${BUILD_DIR}"
                 '''
-                stash name: 'build-artifacts', includes: "${BUILD_DIR}/**"
+                
+                // Stashing package files alongside output to solve Integration Challenge B
+                stash name: 'build-artifacts', includes: "${BUILD_DIR}/**,package.json,package-lock.json"
             }
         }
 
@@ -51,6 +62,7 @@ pipeline {
                 stage('Test') {
                     steps {
                         unstash 'build-artifacts'
+                        echo "Running automated unit test suite..."
                         sh 'npm test'
                     }
                     post {
@@ -61,6 +73,7 @@ pipeline {
                 }
                 stage('Security Audit') {
                     steps {
+                        echo "Auditing dependencies against known vulnerabilities..."
                         sh 'npm audit --audit-level=high || true'
                     }
                 }
@@ -69,6 +82,7 @@ pipeline {
 
         stage('Archive') {
             steps {
+                echo "Archiving build outputs with fingerprinting..."
                 archiveArtifacts artifacts: "${BUILD_DIR}/**",
                                  fingerprint: true,
                                  onlyIfSuccessful: true
@@ -77,6 +91,7 @@ pipeline {
 
         stage('Publish') {
             steps {
+                echo "Publishing versioned artifact to Nexus repository..."
                 withCredentials([usernamePassword(
                     credentialsId: 'nexus-credentials',
                     usernameVariable: 'NEXUS_USER',
@@ -86,11 +101,11 @@ pipeline {
                         set -e
                         trap "rm -f .npmrc" EXIT
                         
-                        echo "Target Artifact Version: ${ARTIFACT_VERSION}"
+                        echo "Publishing Version: ${ARTIFACT_VERSION}"
                         AUTH_BASE64=$(echo -n "${NEXUS_USER}:${NEXUS_PASS}" | base64 | tr -d '\n')
                         
                         cat <<EOF > .npmrc
-//nexus:8081/repository/kijanikiosk-payments/:_auth=${AUTH_BASE64}
+//172.17.0.1:8081/repository/kijanikiosk-payments/:_auth=${AUTH_BASE64}
 EOF
 
                         npm version "${ARTIFACT_VERSION}" --no-git-tag-version
@@ -103,17 +118,22 @@ EOF
 
     post {
         success {
-            echo "Published ${APP_NAME} version ${ARTIFACT_VERSION} to Nexus"
+            echo "SUCCESS: Published ${APP_NAME} version ${ARTIFACT_VERSION} to Nexus."
+            echo "Artifact URL: ${NEXUS_URL}/${APP_NAME}/-/${APP_NAME}-${ARTIFACT_VERSION}.tgz"
         }
         failure {
-            echo "Pipeline FAILED at build ${BUILD_NUMBER} - check console logs at ${BUILD_URL}"
+            echo "FAILURE: Pipeline build ${BUILD_NUMBER} failed. Review logs at ${BUILD_URL}"
+        }
+        changed {
+            echo "STATUS CHANGE: Build status transitioned to ${currentBuild.currentResult} for ${JOB_NAME} #${BUILD_NUMBER}"
         }
         always {
             script {
                 try {
                     cleanWs()
+                    echo "Workspace successfully wiped."
                 } catch (Exception e) {
-                    echo "Skipped workspace cleanup: ${e.message}"
+                    echo "Workspace cleanup warning: ${e.message}"
                 }
             }
         }
