@@ -89,7 +89,7 @@ pipeline {
 EOF
 
                         npm version "${ARTIFACT_VERSION}" --no-git-tag-version
-                        npm publish --registry "${NEXUS_URL}/"
+                        npm publish --registry "${NEXUS_URL}/" --tag dev
                     '''
                 }
             }
