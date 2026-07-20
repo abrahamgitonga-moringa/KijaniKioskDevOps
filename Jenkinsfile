@@ -25,7 +25,8 @@ pipeline {
             steps {
                 script {
                     env.PKG_VERSION      = sh(script: "node -p \"require('./package.json').version\"", returnStdout: true).trim()
-                    env.GIT_SHORT        = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                    // Extract first 7 characters of GIT_COMMIT provided natively by Jenkins SCM
+                    env.GIT_SHORT        = env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'local'
                     env.ARTIFACT_VERSION = "${env.PKG_VERSION}-${env.GIT_SHORT}"
                 }
                 echo "Initializing release build for ${APP_NAME} version ${ARTIFACT_VERSION}"
