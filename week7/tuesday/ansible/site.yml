@@ -1,0 +1,14 @@
+
+- name: Configure KijaniKiosk API Application Servers
+  hosts: all
+  become: true
+  tasks:
+    - name: Deploy application deployment script
+      ansible.builtin.copy:
+        src: ../scripts/deploy-app.sh
+        dest: /opt/kijanikiosk/scripts/deploy-app.sh
+        owner: root
+        group: kijanikiosk
+        mode: '0750'
+      tags:
+        - deployment
