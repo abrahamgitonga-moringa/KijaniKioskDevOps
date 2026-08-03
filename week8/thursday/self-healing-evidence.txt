@@ -1,0 +1,18 @@
+=== PHASE 4: SELF-HEALING TEST EVIDENCE ===
+
+--- PODS BEFORE DELETION ---
+NAME                           READY   STATUS    RESTARTS   AGE
+kk-payments-65d64976bd-j5q8h   1/1     Running   0          13m
+kk-payments-65d64976bd-xzhmp   1/1     Running   0          13m
+T0 (Pod deleted): 18:40:16
+T1 (Replacement Running): 18:40:47
+Total Self-Healing Time: 31 seconds
+
+--- PODS AFTER SELF-HEALING ---
+NAME                           READY   STATUS    RESTARTS   AGE
+kk-payments-65d64976bd-xzhmp   1/1     Running   0          13m
+kk-payments-65d64976bd-z5lgh   1/1     Running   0          31s
+
+--- DEPLOYMENT STATUS AFTER RECOVERY ---
+NAME          READY   UP-TO-DATE   AVAILABLE   AGE
+kk-payments   2/2     2            2           32m

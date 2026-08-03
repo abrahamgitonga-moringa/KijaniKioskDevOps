@@ -1,0 +1,107 @@
+=== PHASE 3: KUBECTL DIAGNOSTIC SUITE ===
+
+1. OVERVIEW: WHAT IS RUNNING
+NAME                               READY   STATUS    RESTARTS   AGE
+pod/kk-payments-65d64976bd-j5q8h   1/1     Running   0          12m
+pod/kk-payments-65d64976bd-xzhmp   1/1     Running   0          11m
+
+NAME                          TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+service/kk-payments-service   NodePort   10.111.210.100   <none>        3001:30001/TCP   18m
+
+NAME                          READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/kk-payments   2/2     2            2           30m
+
+NAME                                     DESIRED   CURRENT   READY   AGE
+replicaset.apps/kk-payments-65d64976bd   2         2         2       12m
+replicaset.apps/kk-payments-847cdd9fc5   0         0         0       30m
+
+2. DETAILED DEPLOYMENT STATE
+Name:                   kk-payments
+Namespace:              default
+CreationTimestamp:      Mon, 03 Aug 2026 18:07:59 +0300
+Labels:                 app=kk-payments
+Annotations:            deployment.kubernetes.io/revision: 2
+Selector:               app=kk-payments
+Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:       app=kk-payments
+  Annotations:  kubectl.kubernetes.io/restartedAt: 2026-08-03T18:26:55+03:00
+  Containers:
+   kk-payments:
+    Image:      kijanikiosk/kk-payments:v1.0.0-prod
+    Port:       3001/TCP
+    Host Port:  0/TCP
+    Limits:
+      cpu:     250m
+      memory:  256Mi
+    Requests:
+      cpu:      100m
+      memory:   128Mi
+    Liveness:   http-get http://:3001/health delay=10s timeout=3s period=10s #success=1 #failure=3
+    Readiness:  http-get http://:3001/health delay=5s timeout=3s period=5s #success=1 #failure=2
+    Environment:
+      NODE_ENV:    production
+      PORT:        3001
+    Mounts:        <none>
+  Volumes:         <none>
+  Node-Selectors:  <none>
+  Tolerations:     <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  kk-payments-847cdd9fc5 (0/0 replicas created)
+NewReplicaSet:   kk-payments-65d64976bd (2/2 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  30m   deployment-controller  Scaled up replica set kk-payments-847cdd9fc5 from 0 to 2
+  Normal  ScalingReplicaSet  12m   deployment-controller  Scaled up replica set kk-payments-65d64976bd from 0 to 1
+  Normal  ScalingReplicaSet  11m   deployment-controller  Scaled down replica set kk-payments-847cdd9fc5 from 2 to 1
+  Normal  ScalingReplicaSet  11m   deployment-controller  Scaled up replica set kk-payments-65d64976bd from 1 to 2
+  Normal  ScalingReplicaSet  11m   deployment-controller  Scaled down replica set kk-payments-847cdd9fc5 from 1 to 0
+
+3. POD LOGS
+=== Logs: pod/kk-payments-65d64976bd-j5q8h ===
+Payments Service v1.0
+Payments Service listening on port 3001
+=== Logs: pod/kk-payments-65d64976bd-xzhmp ===
+Payments Service v1.0
+Payments Service listening on port 3001
+
+4. EXEC COMMANDS INSIDE RUNNING POD
+--- EXEC: whoami ---
+node
+--- EXEC: node --version ---
+v18.20.8
+--- EXEC: http://127.0.0.1:3001/health ---
+{"status":"healthy"}
+5. RESOURCE USAGE
+error: Metrics API not available
+Metrics pending...
+
+6. RECENT EVENTS
+27m         Warning   Failed              pod/kk-payments-847cdd9fc5-m2rwd    Error: ErrImagePull
+20m         Normal    BackOff             pod/kk-payments-847cdd9fc5-m2rwd    Back-off pulling image "kijanikiosk/kk-payments:v1.0.0-prod"
+12m         Normal    SuccessfulCreate    replicaset/kk-payments-65d64976bd   Created pod: kk-payments-65d64976bd-j5q8h
+12m         Normal    Scheduled           pod/kk-payments-65d64976bd-j5q8h    Successfully assigned default/kk-payments-65d64976bd-j5q8h to minikube
+12m         Normal    ScalingReplicaSet   deployment/kk-payments              Scaled up replica set kk-payments-65d64976bd from 0 to 1
+12m         Normal    Pulled              pod/kk-payments-65d64976bd-j5q8h    Container image "kijanikiosk/kk-payments:v1.0.0-prod" already present on machine and can be accessed by the pod
+12m         Normal    Started             pod/kk-payments-65d64976bd-j5q8h    Container started
+12m         Normal    Created             pod/kk-payments-65d64976bd-j5q8h    Container created
+11m         Normal    Scheduled           pod/kk-payments-65d64976bd-xzhmp    Successfully assigned default/kk-payments-65d64976bd-xzhmp to minikube
+11m         Normal    SuccessfulDelete    replicaset/kk-payments-847cdd9fc5   Deleted pod: kk-payments-847cdd9fc5-m2rwd
+11m         Normal    Killing             pod/kk-payments-847cdd9fc5-m2rwd    Stopping container kk-payments
+11m         Normal    SuccessfulCreate    replicaset/kk-payments-65d64976bd   Created pod: kk-payments-65d64976bd-xzhmp
+11m         Normal    ScalingReplicaSet   deployment/kk-payments              Scaled down replica set kk-payments-847cdd9fc5 from 2 to 1
+11m         Normal    ScalingReplicaSet   deployment/kk-payments              Scaled up replica set kk-payments-65d64976bd from 1 to 2
+11m         Normal    Started             pod/kk-payments-65d64976bd-xzhmp    Container started
+11m         Normal    Pulled              pod/kk-payments-65d64976bd-xzhmp    Container image "kijanikiosk/kk-payments:v1.0.0-prod" already present on machine and can be accessed by the pod
+11m         Normal    Created             pod/kk-payments-65d64976bd-xzhmp    Container created
+11m         Normal    ScalingReplicaSet   deployment/kk-payments              Scaled down replica set kk-payments-847cdd9fc5 from 1 to 0
+11m         Normal    Killing             pod/kk-payments-847cdd9fc5-ss9hk    Stopping container kk-payments
+11m         Normal    SuccessfulDelete    replicaset/kk-payments-847cdd9fc5   Deleted pod: kk-payments-847cdd9fc5-ss9hk

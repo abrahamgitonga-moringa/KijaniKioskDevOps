@@ -1,0 +1,13 @@
+=== PHASE 2: SERVICE VERIFICATION EVIDENCE ===
+
+--- SERVICE & ENDPOINTS STATUS ---
+NAME                  TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+kk-payments-service   NodePort   10.111.210.100   <none>        3001:30001/TCP   104s
+NAME                  ENDPOINTS                         AGE
+kk-payments-service   10.244.0.8:3001,10.244.0.9:3001   104s
+
+--- NODEPORT HTTP CURL OUTPUT ---
+{"status":"healthy"}
+--- IN-CLUSTER POD HTTP HEALTH CURL ---
+
+{"status":"healthy"}
