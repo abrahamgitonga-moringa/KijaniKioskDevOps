@@ -1,0 +1,12 @@
+=== KUBERNETES DEPLOYMENT OUTPUT ===
+deployment.apps/kk-payments unchanged
+Waiting for deployment "kk-payments" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "kk-payments" rollout to finish: 1 old replicas are pending termination...
+deployment "kk-payments" successfully rolled out
+
+=== ACTIVE POD STATUS ===
+NAME                           READY   STATUS        RESTARTS        AGE    IP            NODE       NOMINATED NODE   READINESS GATES
+kk-payments-65d64976bd-tvbmr   1/1     Terminating   0               4m1s   10.244.0.21   minikube   <none>           <none>
+kk-payments-65d64976bd-z5lgh   1/1     Terminating   1 (8m18s ago)   100m   10.244.0.19   minikube   <none>           <none>
+kk-payments-79d9c65657-4bncf   1/1     Running       0               7s     10.244.0.22   minikube   <none>           <none>
+kk-payments-79d9c65657-gpf75   1/1     Running       0               5m2s   10.244.0.20   minikube   <none>           <none>
