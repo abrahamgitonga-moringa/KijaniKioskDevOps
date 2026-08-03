@@ -1,0 +1,18 @@
+=== BASELINE COMPARISON ===
+Monday Single-Stage Baseline Size: 280MB
+
+=== TEST 1: Image Size Under 100MB ===
+Production Image Size: 181MB
+
+=== TEST 2: Process Runs as Non-Root ===
+kijani
+
+=== TEST 3: TypeScript Compiler Not Present ===
+PASS: tsc not in image
+
+=== TEST 4: devDependencies Not Present ===
+PASS: no devDeps
+
+=== TEST 5: HEALTHCHECK Transition ===
+10s: starting
+20s: healthy

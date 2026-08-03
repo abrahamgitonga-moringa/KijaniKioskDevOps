@@ -1,0 +1,12 @@
+=== BUILDER STAGE VERIFICATION ===
+
+> kijanikiosk-payments@2.0.3 test
+> echo 'Running unit tests...' && node -e 'console.log("Tests passed!")'
+
+Running unit tests...
+Tests passed!
+
+--- Builder vs Production Size Comparison ---
+TAG: v1.0.0-builder | SIZE: 280MB
+TAG: v1.0.0-prod | SIZE: 181MB
+TAG: v1.0.0-local | SIZE: 280MB
