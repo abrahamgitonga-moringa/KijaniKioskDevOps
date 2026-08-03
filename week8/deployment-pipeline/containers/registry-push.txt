@@ -1,0 +1,42 @@
+=== REGISTRY PUSH AND COLD PULL VERIFICATION ===
+
+--- PUSHING TO REGISTRY ---
+The push refers to repository [kijani-registry.internal:5000/kk-payments]
+2f5e427ef61d: Pushed
+f18232174bc9: Pushed
+35332bfef2e7: Pushed
+4f4fb700ef54: Pushed
+7353464308d8: Pushed
+0cc5d12ae359: Pushed
+1e5a4c89cee5: Pushed
+2a5f0d7fbeb3: Pushed
+1120274a64c4: Pushed
+25ff2da83641: Pushed
+dd71dde834b5: Pushed
+2.0.3-a555a15: digest: sha256:088e65127848918351f4f7e64ec9ab2afb64efd8ddf9732ba3d165d1bf00921d size: 856
+
+--- REMOVING LOCAL IMAGE (COLD PULL TEST) ---
+Untagged: kijani-registry.internal:5000/kk-payments:2.0.3-a555a15
+Deleted: sha256:088e65127848918351f4f7e64ec9ab2afb64efd8ddf9732ba3d165d1bf00921d
+
+--- PULLING FRESH IMAGE FROM REGISTRY ---
+2.0.3-a555a15: Pulling from kk-payments
+2a5f0d7fbeb3: Pulling fs layer
+1120274a64c4: Pulling fs layer
+35332bfef2e7: Pulling fs layer
+4f4fb700ef54: Pulling fs layer
+0cc5d12ae359: Pulling fs layer
+4f4fb700ef54: Already exists
+2f5e427ef61d: Download complete
+35332bfef2e7: Already exists
+1120274a64c4: Already exists
+2a5f0d7fbeb3: Already exists
+0cc5d12ae359: Already exists
+4f4fb700ef54: Pull complete
+35332bfef2e7: Pull complete
+1120274a64c4: Pull complete
+2a5f0d7fbeb3: Pull complete
+0cc5d12ae359: Pull complete
+Digest: sha256:088e65127848918351f4f7e64ec9ab2afb64efd8ddf9732ba3d165d1bf00921d
+Status: Downloaded newer image for kijani-registry.internal:5000/kk-payments:2.0.3-a555a15
+kijani-registry.internal:5000/kk-payments:2.0.3-a555a15
