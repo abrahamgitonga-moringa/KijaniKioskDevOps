@@ -8,3 +8,4 @@ Feature B update
 ![Process Diagnostics](assets/screenshots/)
 ![Log Pipeline](assets/screenshots/)
 <!-- Pipeline verification run: test -->
+<!-- Trigger deployment -->
