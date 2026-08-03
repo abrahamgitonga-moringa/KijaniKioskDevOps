@@ -1,0 +1,12 @@
+=== KUBERNETES POD SELF-HEALING TEST ===
+Deleting Active Pod: kk-payments-79d9c65657-4bncf
+pod "kk-payments-79d9c65657-4bncf" deleted from default namespace
+pod/kk-payments-79d9c65657-gpf75 condition met
+pod/kk-payments-79d9c65657-j944f condition met
+
+Total Pod Self-Healing Recovery Time: 31 seconds
+
+=== NEW POD STATUS ===
+NAME                           READY   STATUS    RESTARTS   AGE    IP            NODE       NOMINATED NODE   READINESS GATES
+kk-payments-79d9c65657-gpf75   1/1     Running   0          8m9s   10.244.0.20   minikube   <none>           <none>
+kk-payments-79d9c65657-j944f   1/1     Running   0          32s    10.244.0.23   minikube   <none>           <none>

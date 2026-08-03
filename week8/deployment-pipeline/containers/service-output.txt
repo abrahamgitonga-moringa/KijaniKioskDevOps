@@ -1,0 +1,10 @@
+=== KUBERNETES SERVICE VERIFICATION ===
+service/kk-payments-service unchanged
+
+--- SERVICE ENDPOINTS CHECK ---
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME                  ENDPOINTS                           AGE
+kk-payments-service   10.244.0.20:3001,10.244.0.22:3001   121m
+
+--- HEALTH ENDPOINT RESPONSE ---
+{"status":"healthy"}
