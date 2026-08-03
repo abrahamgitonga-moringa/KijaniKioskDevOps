@@ -1,0 +1,55 @@
+name: KijaniKiosk Continuous Deployment
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  set-environment:
+    runs-on: ubuntu-latest
+    outputs:
+      target_env: ${{ steps.select_env.outputs.target_env }}
+    steps:
+      - id: select_env
+        run: echo "target_env=green" >> $GITHUB_OUTPUT
+
+  apply:
+    needs: set-environment
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Applying infrastructure terraform/ansible requirements..."
+
+  verify:
+    needs: apply
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Running pre-flight checks..."
+
+  configure:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Configuring staging hosts..."
+
+  deploy-app:
+    needs: configure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute Tuesday Deployment Script
+        run: echo "Executing deploy-app.sh for target environment..."
+
+  switch-traffic:
+    needs: deploy-app
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute Blue/Green Nginx Traffic Switch
+        run: echo "Executing switch-env.sh to switch Nginx upstream proxy..."
+
+  auto-rollback:
+    needs: [deploy-app, switch-traffic]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Rollback Script
+        run: echo "Triggering rollback.sh due to deployment or switch failure..."
