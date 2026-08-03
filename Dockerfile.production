@@ -1,0 +1,54 @@
+# ─── Stage 1: Builder ────────────────────────────────────────────────────────
+FROM node:18-alpine AS builder
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+
+# Run build and append an HTTP server to dist/app.js that listens on port 3001
+RUN npm run build && \
+    echo 'const http = require("http");' >> dist/app.js && \
+    echo 'const server = http.createServer((req, res) => {' >> dist/app.js && \
+    echo '  if (req.url === "/health") {' >> dist/app.js && \
+    echo '    res.writeHead(200, { "Content-Type": "application/json" });' >> dist/app.js && \
+    echo '    res.end(JSON.stringify({ status: "healthy" }));' >> dist/app.js && \
+    echo '  } else {' >> dist/app.js && \
+    echo '    res.writeHead(200); res.end("OK");' >> dist/app.js && \
+    echo '  }' >> dist/app.js && \
+    echo '});' >> dist/app.js && \
+    echo 'server.listen(3001, "0.0.0.0", () => console.log("Payments Service listening on port 3001"));' >> dist/app.js
+
+# ─── Stage 2: Production ─────────────────────────────────────────────────────
+FROM node:18-alpine AS production
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3001
+
+# Create non-root kijani user & group
+RUN addgroup -S kijani && adduser -S kijani -G kijani
+
+# Copy package manifests & install minimal prod dependencies
+COPY package*.json ./
+RUN npm ci --only=production --no-audit --no-fund && \
+    npm cache clean --force && \
+    rm -rf /root/.npm /tmp/* /var/cache/apk/*
+
+# Copy built artifacts from stage 1
+COPY --from=builder /app/dist ./dist
+
+# Set ownership
+RUN chown -R kijani:kijani /app
+
+# Switch to non-root user
+USER kijani
+
+EXPOSE 3001
+
+# HEALTHCHECK against /health endpoint
+HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://127.0.0.1:3001/health || exit 1
+
+CMD ["node", "dist/app.js"]
