@@ -2,7 +2,9 @@ name: KijaniKiosk Continuous Deployment
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -24,7 +26,7 @@ jobs:
     needs: apply
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Running pre-flight checks..."
+      - run: echo "Running pre-flight environment checks..."
 
   configure:
     needs: verify
@@ -36,20 +38,25 @@ jobs:
     needs: configure
     runs-on: ubuntu-latest
     steps:
-      - name: Execute Tuesday Deployment Script
-        run: echo "Executing deploy-app.sh for target environment..."
+      - run: echo "Executing deploy-app.sh for target environment..."
 
   switch-traffic:
     needs: deploy-app
     runs-on: ubuntu-latest
     steps:
-      - name: Execute Blue/Green Nginx Traffic Switch
-        run: echo "Executing switch-env.sh to switch Nginx upstream proxy..."
+      - run: echo "Executing switch-env.sh to switch Nginx upstream proxy..."
+
+  post-deploy-monitor:
+    needs: switch-traffic
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute Confidence Monitoring Window
+        run: echo "Executing post-deploy-monitor.sh 60..."
 
   auto-rollback:
-    needs: [deploy-app, switch-traffic]
+    needs: [deploy-app, switch-traffic, post-deploy-monitor]
     if: failure()
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Rollback Script
-        run: echo "Triggering rollback.sh due to deployment or switch failure..."
+        run: echo "Triggering rollback.sh due to deployment or monitor failure..."
