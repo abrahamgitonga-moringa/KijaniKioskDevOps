@@ -1,0 +1,9 @@
+Events:
+  Type     Reason     Age                 From               Message
+  ----     ------     ----                ----               -------
+  Normal   Scheduled  110s                default-scheduler  Successfully assigned default/kk-pulltest-5c68bf79b4-2x9zp to minikube
+  Normal   Pulling    35s (x4 over 109s)  kubelet            Pulling image "kijanikiosk/kk-payments:tag-does-not-exist"
+  Warning  Failed     34s (x4 over 108s)  kubelet            Failed to pull image "kijanikiosk/kk-payments:tag-does-not-exist": rpc error: code = NotFound desc = manifest unknown: manifest unknown
+  Warning  Failed     34s (x4 over 108s)  kubelet            Error: ErrImagePull
+  Normal   BackOff    10s (x6 over 107s)  kubelet            Back-off pulling image "kijanikiosk/kk-payments:tag-does-not-exist"
+  Warning  Failed     10s (x6 over 107s)  kubelet            Error: ImagePullBackOff
