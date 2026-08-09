@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kk-payments
+  labels:
+    app: kk-payments
+  annotations:
+    kubernetes.io/change-cause: "Extract all config to ConfigMap and Secret: address Osei code review"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kk-payments
+  template:
+    metadata:
+      labels:
+        app: kk-payments
+    spec:
+      containers:
+      - name: kk-payments
+        image: kijani-registry.internal:5000/kk-payments:2.0.3-a555a15
+        ports:
+        - containerPort: 3001
+        envFrom:
+        - configMapRef:
+            name: kk-payments-config
+        - secretRef:
+            name: kk-payments-secrets
