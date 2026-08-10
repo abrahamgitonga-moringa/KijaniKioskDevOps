@@ -1,0 +1,6 @@
+$ kubectl logs kk-crashtest-78f949b9d-4l8vw
+[empty output]
+
+$ kubectl logs kk-crashtest-78f949b9d-4l8vw --previous
+kk-payments starting
+ERROR: DATABASE_URL not set

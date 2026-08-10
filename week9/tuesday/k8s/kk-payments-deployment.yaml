@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kk-payments
+  labels:
+    app: kk-payments
+  annotations:
+    kubernetes.io/change-cause: "Rollback kk-payments to stable 2.0.3-a555a15 after Phase 2 regression test"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kk-payments
+  template:
+    metadata:
+      labels:
+        app: kk-payments
+    spec:
+      containers:
+      - name: kk-payments
+        image: kijani-registry.internal:5000/kk-payments:2.0.3-a555a15
+        ports:
+        - containerPort: 3001
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"

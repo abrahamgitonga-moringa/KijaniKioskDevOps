@@ -1,0 +1,11 @@
+# Extract Pod Name
+POD_NAME=$(kubectl get pod -l app=kk-payments -o jsonpath="{.items[0].metadata.name}")
+echo "Pod Name: $POD_NAME"
+
+# Extract Container Image Tag
+IMAGE_TAG=$(kubectl get deployment kk-payments -o jsonpath="{.spec.template.spec.containers[0].image}")
+echo "Image Tag: $IMAGE_TAG"
+
+# Output:
+# Pod Name: kk-payments-6b4f8d-xyz12
+# Image Tag: kijanikiosk/kk-payments:1.0.0-abc1234
