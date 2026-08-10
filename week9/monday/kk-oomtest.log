@@ -1,0 +1,13 @@
+State:          Waiting
+      Reason:       CrashLoopBackOff
+    Last State:     Terminated
+      Reason:       OOMKilled
+      Exit Code:    137
+      Started:      Sun, 09 Aug 2026 17:48:10 +0300
+      Finished:     Sun, 09 Aug 2026 17:48:22 +0300
+    Ready:          False
+    Restart Count:  3
+    Limits:
+      memory:       4Mi
+    Requests:
+      memory:       4Mi

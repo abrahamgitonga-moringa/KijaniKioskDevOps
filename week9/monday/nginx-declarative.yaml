@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nginx-declarative
+    week: "9"
+  name: nginx-declarative
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-declarative
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginx-declarative
+        week: "9"
+    spec:
+      containers:
+      - image: nginx:alpine
+        name: nginx
+        resources: {}
+status: {}
