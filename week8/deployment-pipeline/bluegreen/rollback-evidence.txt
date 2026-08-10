@@ -1,0 +1,40 @@
+=== AUTOMATED ROLLBACK EVIDENCE LOG ===
+
+Terminal Execution Log:
+[19:37:43] [MONITOR] Starting post-deployment confidence monitoring window (60s)...
+[19:37:43] [MONITOR] Poll 1: HTTP 200 | 0.003948s | elapsed: 0s
+[19:37:48] [MONITOR] Poll 2: HTTP 200 | 0.004001s | elapsed: 5s
+[19:37:53] [MONITOR] Poll 3: HTTP 502 | 0.001307s | elapsed: 10s
+[19:37:53] [MONITOR WARN] Health check failed (consecutive: 1, window errors: 1)
+[19:37:58] [MONITOR] Poll 4: HTTP 502 | 0.001214s | elapsed: 15s
+[19:37:58] [MONITOR WARN] Health check failed (consecutive: 2, window errors: 2)
+[19:38:03] [MONITOR] Poll 5: HTTP 502 | 0.001257s | elapsed: 20s
+[19:38:03] [MONITOR WARN] Health check failed (consecutive: 3, window errors: 3)
+[19:38:03] [MONITOR FAIL] ROLLBACK TRIGGERED: 3 consecutive health check failures
+[19:38:03] [MONITOR FAIL] Calling rollback.sh...
+[ROLLBACK] Executing emergency rollback to stable baseline: blue
+[19:38:03] Current environment: green
+[19:38:03] Target environment: blue
+[19:38:03] Step 1: Verifying blue is healthy on port 3000...
+[19:38:03] Pre-switch health check passed: blue is healthy
+[19:38:03] Step 2: Writing new nginx active-env configuration...
+[19:38:03] Step 3: Validating nginx configuration...
+[19:38:03] Step 4: Reloading nginx...
+[19:38:03] nginx reloaded. Traffic now routing to blue.
+[19:38:04] Step 5: Confirming switch via proxy health check...
+[19:38:04] Post-switch confirmation passed: proxy is routing to blue (port 3000)
+[19:38:04] === Switch to blue complete ===
+[19:38:04] [MONITOR] Rollback completed successfully.
+
+=== DURATION CALCULATION ===
+T0 (Fault Injected - systemctl stop kk-api-green): 19:37:48
+T1 (First Failure Detected by Monitor): 19:37:53
+T2 (Rollback Completed & Proxy Verified): 19:38:04
+Total Rollback Time (T0 -> T2): 16 seconds
+SLA Target: < 90 seconds
+Status: PASSED
+
+=== POST-ROLLBACK VERIFICATION ===
+.active-env: blue
+.previous-env: green
+HTTP Proxy Endpoint: {"status":"ok","version":"v1.3.0","port":3000}
