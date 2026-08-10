@@ -1,0 +1,11 @@
+=== DOCKER IMAGES METRICS ===
+kijani-registry.internal:5000/kk-payments:2.0.3-a555a15                                               3f5825bbea54        181MB         44.9MB        
+kijanikiosk/kk-payments:v1.0.0-builder                                                                0c47da6d793b        280MB         73.8MB        
+kijanikiosk/kk-payments:v1.0.0-local                                                                  4cea8c867c52        280MB         73.8MB        
+kijanikiosk/kk-payments:v1.0.0-prod                                                                   eca0043e0912        181MB         44.9MB        
+
+=== NON-ROOT USER CHECK ===
+kijani
+
+=== NO DEV DEPENDENCIES (TSC CHECK) ===
+tsc not found (PASSED: no dev dependencies present)
