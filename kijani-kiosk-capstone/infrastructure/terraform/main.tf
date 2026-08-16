@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.5.0"
+  required_version = ">= 1.3.0"
   required_providers {
     kubernetes = {
       source  = "hashicorp/kubernetes"
@@ -12,10 +12,9 @@ provider "kubernetes" {
   config_path = "~/.kube/config"
 }
 
-# Namespace Provisioning
 resource "kubernetes_namespace" "staging" {
   metadata {
-    name = var.staging_namespace
+    name = "kijani-staging"
     labels = {
       environment = "staging"
       app         = "kijani-kiosk"
@@ -23,7 +22,6 @@ resource "kubernetes_namespace" "staging" {
   }
 }
 
-# Resource Quotas for Staging Isolation
 resource "kubernetes_resource_quota" "staging_quota" {
   metadata {
     name      = "staging-quota"

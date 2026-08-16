@@ -1,9 +1,9 @@
 output "namespace_name" {
   value       = kubernetes_namespace.staging.metadata[0].name
-  description = "Provisioned staging namespace name"
+  description = "The name of the created staging namespace"
 }
 
 output "staging_db_host" {
-  value       = var.staging_db_host
-  description = "Configured staging database host"
+  value       = "staging-db.internal"
+  description = "Internal database endpoint for staging"
 }

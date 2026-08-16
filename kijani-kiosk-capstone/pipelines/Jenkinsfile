@@ -1,0 +1,118 @@
+pipeline {
+    agent any
+
+    environment {
+        STAGING_NS = 'kijani-staging'
+        PROD_NS    = 'default'
+        APP_NAME   = 'kk-payments'
+        IMAGE_TAG  = "${BUILD_NUMBER}"
+    }
+
+    options {
+        timeout(time: 1, unit: 'HOURS')
+        ansiColor('xterm')
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Checkout & Validation') {
+            steps {
+                echo "==> Checking out repository source code..."
+                checkout scm
+                sh 'kubectl version --client'
+            }
+        }
+
+        stage('Provision Infrastructure') {
+            steps {
+                echo "==> Applying Terraform configuration for ${STAGING_NS}..."
+                dir('infrastructure/terraform') {
+                    sh 'terraform init -input=false'
+                    sh 'terraform apply -auto-approve -input=false'
+                }
+                echo "==> Applying Ansible configurations..."
+                dir('infrastructure/ansible') {
+                    sh 'ansible-playbook -i inventory/hosts.ini playbook.yml'
+                }
+            }
+        }
+
+        stage('Deploy to Staging') {
+            steps {
+                echo "==> Deploying ${APP_NAME} to Staging Namespace (${STAGING_NS})..."
+                sh """
+                    kubectl apply -f kubernetes/staging/ -n ${STAGING_NS}
+                    kubectl rollout status deployment/${APP_NAME} -n ${STAGING_NS} --timeout=90s
+                """
+            }
+        }
+
+        stage('Staging Smoke Test') {
+            steps {
+                echo "==> Executing Automated Smoke Tests in Staging..."
+                script {
+                    def stagingIp = sh(
+                        script: "kubectl get svc ${APP_NAME} -n ${STAGING_NS} -o jsonpath='{.spec.clusterIP}'",
+                        returnStdout: true
+                    ).trim()
+
+                    echo "Testing Staging Service at IP: http://${stagingIp}:8080/health"
+
+                    sh """
+                        curl --fail --retry 3 --retry-delay 5 http://${stagingIp}:8080/health || exit 1
+                    """
+                }
+            }
+        }
+
+        stage('Production Approval Gate') {
+            steps {
+                script {
+                    echo "==> Staging Smoke Test PASSED. Halting for Production Deployment Approval..."
+                    
+                    def userInput = input(
+                        id: 'ProdReleaseGate',
+                        message: "Approve deployment of ${APP_NAME} (Build #${BUILD_NUMBER}) to Production?",
+                        parameters: [
+                            string(
+                                name: 'APPROVAL_RATIONALE',
+                                defaultValue: 'Verified staging smoke tests and error metrics.',
+                                description: 'Enter the operational rationale for approving this production release:'
+                            )
+                        ]
+                    )
+
+                    echo "========================================================="
+                    echo "PRODUCTION RELEASE APPROVED"
+                    echo "Approved By: ${env.BUILD_USER || 'Pipeline Admin'}"
+                    echo "Rationale:   ${userInput}"
+                    echo "========================================================="
+                }
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                echo "==> Deploying ${APP_NAME} to Production Namespace (${PROD_NS})..."
+                sh """
+                    kubectl apply -f kubernetes/production/ -n ${PROD_NS}
+                    kubectl rollout status deployment/${APP_NAME} -n ${PROD_NS} --timeout=90s
+                """
+            }
+        }
+    }
+
+    post {
+        failure {
+            echo "========================================================="
+            echo "PIPELINE FAILED: Initiating Staging Rollback"
+            echo "========================================================="
+            sh "kubectl rollout undo deployment/${APP_NAME} -n ${STAGING_NS} || true"
+        }
+        success {
+            echo "========================================================="
+            echo "PIPELINE SUCCESSFUL: Staging and Production are Synced"
+            echo "========================================================="
+        }
+    }
+}
