@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kk-payments-config
+  namespace: default
+  labels:
+    app: kk-payments
+    environment: production
+data:
+  DB_HOST: "prod-db.internal"
+  RECEIPT_BUCKET: "kk-payments-receipts-prod"
+  LOG_LEVEL: "INFO"

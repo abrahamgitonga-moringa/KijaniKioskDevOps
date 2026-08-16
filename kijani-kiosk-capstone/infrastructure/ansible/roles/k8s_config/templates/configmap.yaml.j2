@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kk-payments-config
+  namespace: {{ target_namespace }}
+  labels:
+    app: kk-payments
+    environment: {{ target_namespace }}
+data:
+  DB_HOST: "{{ db_host }}"
+  RECEIPT_BUCKET: "{{ receipt_bucket }}"
+  LOG_LEVEL: "{{ log_level }}"
