@@ -1,0 +1,27 @@
+---
+- name: Configure KijaniKiosk Staging Environment
+  hosts: localhost
+  connection: local
+  vars:
+    target_namespace: "kijani-staging"
+    db_host: "staging-db.internal"
+    receipt_bucket: "kk-payments-receipts-staging"
+    log_level: "DEBUG"
+  tasks:
+    - name: Ensure target directory exists
+      ansible.builtin.file:
+        path: "../../kubernetes/staging"
+        state: directory
+        mode: '0755'
+
+    - name: Generate Staging ConfigMap from Jinja2 template
+      ansible.builtin.template:
+        src: "roles/k8s_config/templates/configmap.yaml.j2"
+        dest: "../../kubernetes/staging/configmap.yaml"
+        mode: '0644'
+
+    - name: Apply Staging ConfigMap via kubectl
+      ansible.builtin.command:
+        cmd: "kubectl apply -f ../../kubernetes/staging/configmap.yaml -n {{ target_namespace }}"
+      register: kubectl_result
+      changed_when: "'configured' in kubectl_result.stdout or 'created' in kubectl_result.stdout"
