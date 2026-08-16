@@ -1,0 +1,53 @@
+// Jenkinsfile - Three-Stage Pipeline with AI Governance Approval Gate
+pipeline {
+  agent any
+
+  environment {
+    DEPLOY_ENV = 'production'
+  }
+
+  stages {
+    stage('Build & Test') {
+      steps {
+        echo 'Building application artifacts and running test suite...'
+        sh 'npm ci'
+        sh 'npm test'
+      }
+    }
+
+    stage('Approve Production Deployment') {
+      steps {
+        input(
+          message: "Deploy kk-payments:${BUILD_NUMBER} to Production?",
+          ok: 'Deploy',
+          submitter: 'abraham', // Set to active Jenkins username
+          parameters: [
+            text(
+              name: 'APPROVAL_REASON',
+              description: 'Provide justification for production deployment (required for audit log).'
+            )
+          ]
+        )
+      }
+    }
+
+    stage('Deploy to Production') {
+      steps {
+        echo 'Approval received. Executing declarative deployment...'
+        // Maintain GitOps sync: update local manifest before applying
+        sh "sed -i 's|image:.*kk-payments.*|image: kijanikiosk/kk-payments:${BUILD_NUMBER}|' k8s/kk-payments-deployment.yaml"
+        sh 'kubectl apply -f k8s/kk-payments-deployment.yaml -n default'
+        sh 'kubectl rollout status deployment/kk-payments -n default'
+      }
+    }
+  }
+
+  post {
+    always {
+      echo "Pipeline completed for Build #${BUILD_NUMBER}."
+    }
+    success {
+      echo "Deployment successful. Approver audit entry captured in build log."
+    }
+  }
+}
