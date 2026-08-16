@@ -1,0 +1,26 @@
+# Capstone Scope Document: KijaniKiosk Multi-Environment & Automated Delivery System
+
+## Problem Statement
+`kk-payments` currently deploys to a single default namespace on a monolithic Kubernetes cluster without environment isolation or automated deployment gates. Engineers testing payment integration changes risk breaking production workloads, and deployment rollbacks require manual operator intervention. This capstone establishes a dedicated `kijani-staging` namespace provisioned via IaC, enforces zero-touch automated staging deployments with smoke test gates, and implements Prometheus alerting for payment failure anomalies.
+
+## Track
+Track A (Infrastructure-First)
+
+## What I Will Build
+- Component 1: A `kijani-staging` Kubernetes namespace and resource quota provisioned reproducibly using Terraform.
+- Component 2: Environment-specific ConfigMaps and Secrets deployed via Ansible to isolate staging DB endpoints (`DB_HOST=staging-db.internal`) from production.
+- Component 3: An automated Jenkins pipeline deploying to staging on merge, running automated smoke tests, and requiring explicit approval before production promotion.
+- Component 4: A Prometheus alerting rule (`alerts.yml`) configured to fire when `kk-payments` error rates exceed 5% over a 2-minute window.
+- Component 5: Integration with the S3 receipt chain where staging payments write to `kijani-payments-receipts-staging`.
+
+## What Is Out of Scope
+- Distributed tracing and service mesh (Istio/Linkerd): Excluded to prioritize core pipeline reliability and namespace isolation without unnecessary network overhead.
+- Multi-region cluster failover: Excluded as single-cluster multi-namespace isolation satisfies the immediate staging validation requirements.
+
+## Success Criteria
+1. Merging code to `main` automatically provisions/updates `kijani-staging` and executes a passing smoke test (`curl -f /health` returning HTTP 200).
+2. The Jenkins production stage pauses at an interactive approval gate, logging the reviewer identity and approval reasoning.
+3. A simulated fault (invalid DB host) triggers an automated deployment failure/rollback in staging prior to reaching the production approval gate.
+
+## Architecture Description
+The system uses Terraform to declare the target Kubernetes namespace (`kijani-staging`) and S3 receipts bucket. Ansible reads output variables to generate and apply environment-specific ConfigMaps (`DB_HOST`, `ENVIRONMENT=staging`). Jenkins orchestrates the CI/CD workflow: building container images, deploying manifests via `kubectl` to `kijani-staging`, executing HTTP smoke tests, and prompting for manual approval before deploying to the production namespace. Ingress routes external traffic to `kk-payments`, while Prometheus monitors application metrics to alert on high error rates.

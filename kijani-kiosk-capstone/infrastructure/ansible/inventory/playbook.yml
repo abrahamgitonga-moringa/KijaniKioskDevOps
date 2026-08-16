@@ -1,0 +1,37 @@
+---
+- name: Configure KijaniKiosk Staging Environment
+  hosts: localhost
+  vars:
+    target_namespace: "kijani-staging"
+    db_host: "staging-db.internal"
+    receipts_bucket: "kijani-payments-receipts-staging"
+    log_level: "debug"
+
+  tasks:
+    - name: Create ConfigMap Manifest Directory
+      ansible.builtin.file:
+        path: "{{ playbook_dir }}/../../kubernetes/staging"
+        state: directory
+        mode: '0755'
+
+    - name: Generate Staging ConfigMap Manifest
+      ansible.builtin.copy:
+        dest: "{{ playbook_dir }}/../../kubernetes/staging/kk-payments-configmap.yaml"
+        mode: '0644'
+        content: |
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: kk-payments-config
+            namespace: {{ target_namespace }}
+          data:
+            DB_HOST: "{{ db_host }}"
+            ENVIRONMENT: "staging"
+            LOG_LEVEL: "{{ log_level }}"
+            RECEIPTS_BUCKET: "{{ receipts_bucket }}"
+
+    - name: Apply Staging ConfigMap via kubectl
+      ansible.builtin.command:
+        cmd: "kubectl apply -f {{ playbook_dir }}/../../kubernetes/staging/kk-payments-configmap.yaml"
+      register: kubectl_result
+      changed_when: "'configured' in kubectl_result.stdout or 'created' in kubectl_result.stdout"
