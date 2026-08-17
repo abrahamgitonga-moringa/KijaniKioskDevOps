@@ -16,8 +16,18 @@ pipeline {
     stages {
         stage('Checkout & Validation') {
             steps {
-                echo "==> Checking out repository source code..."
-                checkout scm
+                echo "==> Checking out repository source code (Shallow Clone)..."
+                
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/master']],
+                    userRemoteConfigs: [[url: 'https://github.com/abrahamgitonga-moringa/KijaniKioskDevOps.git']],
+                    extensions: [
+                        [$class: 'CloneOption', timeout: 60, depth: 1, shallow: true],
+                        [$class: 'CheckoutOption', timeout: 60]
+                    ]
+                ])
+
                 sh 'kubectl version --client'
             }
         }
@@ -25,12 +35,12 @@ pipeline {
         stage('Provision Infrastructure') {
             steps {
                 echo "==> Applying Terraform configuration for ${STAGING_NS}..."
-                dir('infrastructure/terraform') {
+                dir('kijani-kiosk-capstone/infrastructure/terraform') {
                     sh 'terraform init -input=false'
                     sh 'terraform apply -auto-approve -input=false'
                 }
                 echo "==> Applying Ansible configurations..."
-                dir('infrastructure/ansible') {
+                dir('kijani-kiosk-capstone/infrastructure/ansible') {
                     sh 'ansible-playbook -i inventory/hosts.ini playbook.yml'
                 }
             }
@@ -39,28 +49,31 @@ pipeline {
         stage('Deploy to Staging') {
             steps {
                 echo "==> Deploying ${APP_NAME} to Staging Namespace (${STAGING_NS})..."
-                sh """
+                dir('kijani-kiosk-capstone') {
+                    sh """
                     kubectl apply -f kubernetes/staging/ -n ${STAGING_NS}
                     kubectl rollout status deployment/${APP_NAME} -n ${STAGING_NS} --timeout=90s
-                """
+                    """
+                }
             }
         }
 
         stage('Staging Smoke Test') {
             steps {
-                echo "==> Executing Automated Smoke Tests in Staging..."
-                script {
-                    def stagingIp = sh(
-                        script: "kubectl get svc ${APP_NAME} -n ${STAGING_NS} -o jsonpath='{.spec.clusterIP}'",
-                        returnStdout: true
-                    ).trim()
-
-                    echo "Testing Staging Service at IP: http://${stagingIp}:8080/health"
-
-                    sh """
-                        curl --fail --retry 3 --retry-delay 5 http://${stagingIp}:8080/health || exit 1
-                    """
-                }
+                echo '==> Running Staging Smoke Tests...'
+                sh """
+                    # Forward local port 8888 to service port 8080
+                    kubectl port-forward service/${APP_NAME} 8888:8080 -n ${STAGING_NS} &
+                    PF_PID=\$!
+        
+                    sleep 3
+        
+                    # Curl root path (/) on mapped local port 8888
+                    curl --fail --retry 3 --retry-delay 5 http://localhost:8888/
+        
+                    # Clean up background process
+                    kill \$PF_PID || true
+                """
             }
         }
 
@@ -81,10 +94,12 @@ pipeline {
                         ]
                     )
 
+                    def rationale = (userInput instanceof Map) ? userInput.APPROVAL_RATIONALE : userInput
+
                     echo "========================================================="
                     echo "PRODUCTION RELEASE APPROVED"
                     echo "Approved By: ${env.BUILD_USER || 'Pipeline Admin'}"
-                    echo "Rationale:   ${userInput}"
+                    echo "Rationale:   ${rationale}"
                     echo "========================================================="
                 }
             }
@@ -93,10 +108,12 @@ pipeline {
         stage('Deploy to Production') {
             steps {
                 echo "==> Deploying ${APP_NAME} to Production Namespace (${PROD_NS})..."
-                sh """
+                dir('kijani-kiosk-capstone') {
+                    sh """
                     kubectl apply -f kubernetes/production/ -n ${PROD_NS}
                     kubectl rollout status deployment/${APP_NAME} -n ${PROD_NS} --timeout=90s
-                """
+                    """
+                }
             }
         }
     }
